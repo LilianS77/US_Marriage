@@ -1,44 +1,41 @@
 #### Preamble ####
-# Purpose: Cleans the raw plane data recorded by two observers..... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 6 April 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Cleans the raw data
+# Author: Xizi Sun
+# Date: 24 November 2024
+# Contact: xizi.sun@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Pre-requisites: The `tidyverse`, `dplyr` and `here` packages must be installed and loaded.
+# Any other information needed? No.
 
 #### Workspace setup ####
 library(tidyverse)
+library(dplyr)
+library(here)
 
 #### Clean data ####
-raw_data <- read_csv("inputs/data/plane_data.csv")
+raw_data <- read_csv("/Users/XiziS/OneDrive/Desktop/1/US_Marriage/usa_00005.csv")
 
-cleaned_data <-
-  raw_data |>
-  janitor::clean_names() |>
-  select(wing_width_mm, wing_length_mm, flying_time_sec_first_timer) |>
-  filter(wing_width_mm != "caw") |>
-  mutate(
-    flying_time_sec_first_timer = if_else(flying_time_sec_first_timer == "1,35",
-                                   "1.35",
-                                   flying_time_sec_first_timer)
-  ) |>
-  mutate(wing_width_mm = if_else(wing_width_mm == "490",
-                                 "49",
-                                 wing_width_mm)) |>
-  mutate(wing_width_mm = if_else(wing_width_mm == "6",
-                                 "60",
-                                 wing_width_mm)) |>
-  mutate(
-    wing_width_mm = as.numeric(wing_width_mm),
-    wing_length_mm = as.numeric(wing_length_mm),
-    flying_time_sec_first_timer = as.numeric(flying_time_sec_first_timer)
-  ) |>
-  rename(flying_time = flying_time_sec_first_timer,
-         width = wing_width_mm,
-         length = wing_length_mm
-         ) |> 
-  tidyr::drop_na()
+# Clean the data
+cleaned_data <- raw_data %>%
+  select(MARST, SEX, AGE, RACE, EDUCD, EMPSTAT, INCTOT) %>%
+  filter(
+    MARST != 9,
+    SEX != 9,
+    AGE < 999,
+    RACE < 99,
+    EDUCD < 999,
+    EMPSTAT < 9,
+    INCTOT < 9999999
+  )
+
+# Randomly sample data
+set.seed(724)
+analysis_data <- cleaned_data %>%
+  slice_sample(n = 5000)
 
 #### Save data ####
-write_csv(cleaned_data, "outputs/data/analysis_data.csv")
+# Save cleaned data
+write_csv(analysis_data, here::here("data", "analysis_data", "analysis_data.csv"))
+output_path <- here("data", "01-analysis_data", "analysis_data.parquet")
+write_parquet(analysis_data, output_path)
+
