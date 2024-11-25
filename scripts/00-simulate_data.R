@@ -1,52 +1,55 @@
 #### Preamble ####
-# Purpose: Simulates a dataset of Australian electoral divisions, including the 
-  #state and party that won each division.
-# Author: Rohan Alexander
-# Date: 26 September 2024
-# Contact: rohan.alexander@utoronto.ca
+# Purpose: Simulates a dataset of marriage of USA
+# Author: Xizi Sun
+# Date: 24 November 2024
+# Contact: xizi.sun@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: The `tidyverse` package must be installed
 # Any other information needed? Make sure you are in the `starter_folder` rproj
 
 
-#### Workspace setup ####
-library(tidyverse)
-set.seed(853)
+# Set the seed for reproducibility
+set.seed(724)
 
+# Number of observations
+n <- 5000
 
-#### Simulate data ####
-# State names
-states <- c(
-  "New South Wales",
-  "Victoria",
-  "Queensland",
-  "South Australia",
-  "Western Australia",
-  "Tasmania",
-  "Northern Territory",
-  "Australian Capital Territory"
+# Simulate marital status (randomly generated)
+marital_status <- sample(c("Married", "Not_Married"), size = n, replace = TRUE)
+
+# Simulate age (randomly generated within a realistic range)
+age <- sample(18:100, size = n, replace = TRUE)
+
+# Simulate gender (randomly generated)
+gender <- sample(c("Male", "Female"), size = n, replace = TRUE)
+
+# Simulate race (randomly generated with no probabilities)
+race <- sample(c("White", "Black", "Asian", "American Indian", "Other"), size = n, replace = TRUE)
+
+# Simulate income (randomly generated within a realistic range)
+income <- sample(15000:150000, size = n, replace = TRUE)
+
+# Simulate education level (randomly generated from all categories)
+education_level <- sample(c("Below_High_School", "High_School", "Some_College", "Bachelor", "Above_Bachelor"), 
+                          size = n, replace = TRUE)
+
+# Combine into a data frame
+simulated_data <- data.frame(
+  marital_status = marital_status,
+  age = age,
+  gender = gender,
+  Race = race,
+  Income = income,
+  education_level = education_level
 )
 
-# Political parties
-parties <- c("Labor", "Liberal", "Greens", "National", "Other")
+# Display the structure of the simulated dataset
+str(simulated_data)
 
-# Create a dataset by randomly assigning states and parties to divisions
-analysis_data <- tibble(
-  division = paste("Division", 1:151),  # Add "Division" to make it a character
-  state = sample(
-    states,
-    size = 151,
-    replace = TRUE,
-    prob = c(0.25, 0.25, 0.15, 0.1, 0.1, 0.1, 0.025, 0.025) # Rough state population distribution
-  ),
-  party = sample(
-    parties,
-    size = 151,
-    replace = TRUE,
-    prob = c(0.40, 0.40, 0.05, 0.1, 0.05) # Rough party distribution
-  )
-)
+# Save the simulated data to a CSV file
+write.csv(data,00-simulated_data, "simulated_data.csv", row.names = FALSE)
+
+# Print a success message
+cat("Simulation complete. Dataset with 5000 rows saved as 'simulated_data.csv'.\n")
 
 
-#### Save data ####
-write_csv(analysis_data, "data/00-simulated_data/simulated_data.csv")
