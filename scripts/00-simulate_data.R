@@ -29,7 +29,7 @@ gender <- sample(c("Male", "Female"), size = n, replace = TRUE)
 race <- sample(c("White", "Black", "Asian", "American Indian", "Other"), size = n, replace = TRUE)
 
 # Simulate income (randomly generated within a realistic range)
-income <- sample(15000:150000, size = n, replace = TRUE)
+income <- sample(1:150000, size = n, replace = TRUE)
 
 # Simulate education level (randomly generated from all categories)
 education_level <- sample(c("Below_High_School", "High_School", "Some_College", "Bachelor", "Above_Bachelor"), 
@@ -49,7 +49,14 @@ simulated_data <- data.frame(
 str(simulated_data)
 
 # Save the simulated data to a CSV file
-write_csv(cleaned_data, here("data", "00-simulated_data", "simulated_data.csv"))
+output_path <- here("data", "00-simulated_data", "simulated_data.csv")
+
+# Ensure directory exists
+dir.create(dirname(output_path), recursive = TRUE)
+
+# Write the data
+write_csv(simulated_data, output_path)
 
 # Print a success message
 cat("Simulation complete. Dataset with 5000 rows saved as 'simulated_data.csv'.\n")
+
