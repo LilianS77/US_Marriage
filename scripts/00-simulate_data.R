@@ -4,9 +4,11 @@
 # Date: 24 November 2024
 # Contact: xizi.sun@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: The `tidyverse` package must be installed
-# Any other information needed? Make sure you are in the `starter_folder` rproj
+# Pre-requisites: The `tidyverse` and `here` package must be installed
 
+#### Workspace setup ####
+library(tidyverse)
+library(here)
 
 # Set the seed for reproducibility
 set.seed(724)
@@ -47,9 +49,7 @@ simulated_data <- data.frame(
 str(simulated_data)
 
 # Save the simulated data to a CSV file
-write.csv(data,00-simulated_data, "simulated_data.csv", row.names = FALSE)
+write_csv(cleaned_data, here("data", "00-simulated_data", "simulated_data.csv"))
 
 # Print a success message
 cat("Simulation complete. Dataset with 5000 rows saved as 'simulated_data.csv'.\n")
-
-
