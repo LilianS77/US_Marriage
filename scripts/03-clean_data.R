@@ -4,7 +4,7 @@
 # Date: 24 November 2024
 # Contact: xizi.sun@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: The `tidyverse`, `dplyr` and `here` packages must be installed and loaded.
+# Pre-requisites: The `arrow`, `dplyr`,`fs` and `here` packages must be installed and loaded.
 # Any other information needed? No.
 
 # Load necessary libraries
@@ -54,7 +54,8 @@ cleaned_data <- data %>%
     race_group = case_when(
       RACE == 1 ~ "White",
       RACE == 2 ~ "Black",
-      RACE %in% c(3, 7, 8, 9) ~ "Other",
+      RACE == 3 ~ "American Indian",
+      RACE %in% c(7, 8, 9) ~ "Other",
       RACE %in% c(4, 5, 6) ~ "Asian"
     )
   ) %>%
