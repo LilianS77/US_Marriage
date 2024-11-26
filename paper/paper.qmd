@@ -2,9 +2,8 @@
 title: "My title"
 subtitle: "My subtitle if needed"
 author: 
-  - First author
-  - Another author
-thanks: "Code and data are available at: [https://github.com/RohanAlexander/starter_folder](https://github.com/RohanAlexander/starter_folder)."
+  - Xizi Sun
+thanks: "Code and data are available at: https://github.com/LilianS77/US_Marriage."
 date: today
 date-format: long
 abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
@@ -18,10 +17,22 @@ bibliography: references.bib
 #| warning: false
 #| message: false
 
-library(tidyverse)
-library(palmerpenguins)
+library(ggplot2)
+library(dplyr)
+library(here)
+library(arrow)
+library(scales)
+library(knitr)
 ```
 
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+data <- read_parquet(here("data", "01-analysis_data", "analysis_data.parquet"))
+
+```
 
 # Introduction
 
@@ -42,69 +53,121 @@ Telegraphing paragraph: The remainder of this paper is structured as follows. @s
 
 # Data {#sec-data}
 
-## Overview
+## Data Tool
 
-We use the statistical programming language R [@citeR].... Our data [@shelter].... Following @tellingstories, we consider...
+The dataset was analyzed using R [@citeR] and utilized several R packages for data manipulation and visualization, including ggplot2 [@citeGGplot2], dplyr [@citeDplyr], and here [@citeHere]. The data was processed using the Apache Arrow package [@citeArrow] for efficient file handling and visualized with scales [@citeScales] for enhanced graphics. Reproducibility was ensured using knitr [@citeKnitr]. Data was extracted from IPUMS USA [@ipumsusa]. Guidance on storytelling with data was drawn from Telling Stories with Data [@tellingstories].
 
-Overview text
+## Data Source And Measurement
 
-## Measurement
-	
-Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.
+The data used for this study was sourced from **IPUMS USA (Integrated Public Use Microdata Series)** [@ipumsusa], a comprehensive repository providing access to harmonized census and survey data from the United States. IPUMS USA is renowned for its meticulous process of standardizing variables across datasets, ensuring compatibility over time, and providing extensive metadata to support research. This harmonization process enables researchers to conduct longitudinal and cross-sectional studies on social, demographic, and economic trends.
 
-## Outcome variables
+The dataset consists of **individual-level microdata**, where each record represents a single person, numerically coded for all relevant characteristics. These records are organized into households, allowing for the study of individual behaviors and characteristics in the context of their family or co-residential settings. Unlike compiled statistics or pre-aggregated tables, this microdata structure provides researchers with unparalleled flexibility in exploring relationships between variables.
 
-Add graphs, tables and text. Use sub-sub-headings for each outcome variable or update the subheading to be singular.
+To address the diversity of record layouts, coding schemes, and documentation across the historical scope of the dataset, IPUMS implements a rigorous **harmonization process**. Variables are assigned **uniform codes**, ensuring consistency across census years (1850–2010) and the American Community Surveys (ACS) (2000–present). This standardization simplifies the analysis of long-term trends and facilitates comparisons across time and space.
 
+## Variable Selection
 
+Using the IPUMS data extraction system, this study selected a focused subset of variables to examine the determinants of **non-marriage** in the United States. These include key demographic and socioeconomic characteristics, which are numerically coded for statistical analysis.
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
-
-```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
-#| echo: false
-
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
-```
-
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
+The table [@tbl-cleaned-data] shows the variables after data cleaning, 
 
 ```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
+#| label: tbl-cleaned-data
+#| tbl-cap: Sample of cleaned data
 #| echo: false
 #| warning: false
 #| message: false
 
-analysis_data <- read_csv(here::here("data/02-analysis_data/analysis_data.csv"))
 
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
+# Display the first 6 rows of the dataset with column names
+head(data[, c("marital_status", "age", "gender", "Race", "Income", "education_level")], 6) |>
+  kable(
+    col.names = c("Marital Status", "Age", "Gender", "Race", "Income", "Education Level"),
+    booktabs = TRUE
+  )
 ```
 
-Talk way more about it. 
+### Outcome variables
+The primary outcome variable for this study is **Marital Status**, which categorizes individuals based on their marital state. The proportion of marital status categories is displayed in figure @fig-proportion-marriage. This variable allows for a comparison between individuals who have never married (`Not_Married`) and those who have (`Married`). For this study,
+**Not_Married**: Includes individuals who have never been married.
+**Married**: Includes individuals who are married, as well as those who are divorced, widowed, or separated.
 
-## Predictor variables
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+#| label: fig-proportion-marriage
+#| fig-cap: Proportion of Marital Status Categories
+#| 
+# Calculate proportions
+marital_status_counts <- table(data$marital_status)
+marital_status_df <- as.data.frame(marital_status_counts)
+colnames(marital_status_df) <- c("Marital_Status", "Count")
+marital_status_df$Proportion <- marital_status_df$Count / sum(marital_status_df$Count)
 
-Add graphs, tables and text.
+# Plot
+ggplot(marital_status_df, aes(x = Marital_Status, y = Proportion, fill = Marital_Status)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Proportion of Marital Status Categories",
+    x = "Marital Status",
+    y = "Proportion"
+  ) +
+  theme_minimal()
+```
 
-Use sub-sub-headings for each outcome variable and feel free to combine a few into one if they go together naturally.
+### Predictor variables
 
+This section focuses on the predictor variables included in the study. The distribution of predictor variables is displayed in Figure @fig-predictor-variables. These variables capture demographic, socioeconomic, and personal characteristics, providing a comprehensive framework for analyzing factors associated with marital status. Below are the key predictor variables:
 
+1. **Age**: A continuous variable representing the respondent's age in years.
+2. **Gender**: A categorical variable indicating whether the respondent is male or female. Gender differences often play a role in marital patterns.
+3. **Race**: A categorical variable categorized into White, Black, Asian, American Indian, and Other racial groups. This variable examines potential racial disparities in marital behavior.
+4. **Education Level**: An ordinal variable indicating the highest level of education attained by the respondent. It is grouped into five categories: Below High School, High School, Some College, Bachelor’s Degree, and Above Bachelor.
+5. **Income**: A continuous variable measuring the respondent's annual income in dollars. Income reflects economic resources and may be associated with marital stability and decisions.
 
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-cap: fig-predictor-variables
+#| fig-subcap: ["Age Distribution", "Gender Distribution", "Race Distribution", "Education Level Distribution", "Income Distribution"]
+#| label: fig-predictor-variables
+#| layout-ncol: 2
+
+# Function to create a bar plot or histogram
+create_plot <- function(data, x_var, x_label, is_continuous = FALSE, binwidth = NULL) {
+  if (is_continuous) {
+    # Create a histogram for continuous variables
+    p <- ggplot(data, aes_string(x = x_var)) +
+      geom_histogram(binwidth = binwidth, fill = "skyblue", color = "black") +
+      labs(x = x_label, y = "Count") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  } else {
+    # Create a bar chart for categorical variables
+    p <- ggplot(data, aes_string(x = x_var)) +
+      geom_bar(fill = "skyblue", color = "black") +
+      labs(x = x_label, y = "Count") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  }
+  return(p)
+}
+
+# Create plots for the predictor variables
+create_plot(data, "age", "Age", is_continuous = TRUE, binwidth = 5)
+create_plot(data, "gender", "Gender")
+create_plot(data, "Race", "Race")
+create_plot(data, "education_level", "Education Level")
+create_plot(data, "Income", "Income", is_continuous = TRUE, binwidth = 10000)
+
+```
+
+## Data Selection
+	
+To understand the phenomenon of non-marriage in the United States, I selected the IPUMS USA dataset over alternatives such as IPUMS International. While IPUMS International provides harmonized census data from 104 countries with over 1 billion person records, its vast scope makes it less targeted for this study. My focus is specifically on the U.S. population, and IPUMS USA offers high-precision data from American Community Surveys (ACS) and federal censuses, making it a more suitable choice for studying societal patterns specific to the United States.
 
 
 
@@ -148,12 +211,58 @@ Our results are summarized in @tbl-modelresults.
 #| eval: true
 #| warning: false
 #| message: false
+#| label: fig-Income-Unmarried
+#| fig-cap: Income Distribution for Unmarried Individuals
+
+# Filter for unmarried individuals
+unmarried_data <- data %>% filter(marital_status == "Not_Married")
+
+# Create the income distribution plot without scientific notation
+ggplot(unmarried_data, aes(x = Income)) +
+  geom_histogram(aes(y = ..density..), bins = 30, fill = "skyblue", color = "black", alpha = 0.7) +
+  geom_density(color = "blue", size = 1) +
+  ggtitle("Income Distribution for Unmarried Individuals") +
+  xlab("Income") +
+  ylab("Density") +
+  scale_x_continuous(labels = comma) + # Format x-axis labels as regular numbers
+  theme_minimal()
+```
+
+
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+#| label: fig-Age-Unmarried
+#| fig-cap: Age Distribution for Unmarried Individua
+
+# Filter for unmarried individuals
+unmarried_data <- data %>% filter(marital_status == "Not_Married")
+
+# Create the age distribution plot
+ggplot(unmarried_data, aes(x = age)) +
+  geom_histogram(aes(y = ..density..), bins = 30, fill = "salmon", color = "black", alpha = 0.7) +
+  geom_density(color = "red", size = 1) +
+  ggtitle("Age Distribution for Unmarried Individuals") +
+  xlab("Age") +
+  ylab("Density") +
+  theme_minimal()
+```
+
+
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
 
 library(rstanarm)
 
 first_model <-
   readRDS(file = here::here("models/first_model.rds"))
 ```
+
 
 ```{r}
 #| echo: false
@@ -194,60 +303,12 @@ Weaknesses and next steps should also be included.
 
 \appendix
 
-# Appendix {-}
+# Appendix
 
+## How to Extract 2022 ACS Data from IPUMS
 
-# Additional data details
+To obtain data from IPUMS, we start by navigating to the IPUMS USA section and clicking on Get Data. Next, we go to the Select Sample section, where we uncheck the "Default sample from each year" option and instead select 2023 ACS. After selecting our sample, we proceed to add variables of interest. For individual-level data, we might add variables from the Person section. For example, under Demographic, we could include variables like AGE, and under Person, we could add SEX, RACE, INCTOT (total personal income) and EDUC (education attainment). Once our variables are selected, we click View Cart, then proceed by clicking Create Data Extract. At this point, we review our selections, change the Data Format to CSV, and submit our extract for processing. Then we saved it locally as usa_00001.csv.
 
-# Model details {#sec-model-details}
-
-## Posterior predictive check
-
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
-
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
-
-```{r}
-#| eval: true
-#| echo: false
-#| message: false
-#| warning: false
-#| label: fig-ppcheckandposteriorvsprior
-#| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
-#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
-
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
-
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
-```
-
-## Diagnostics
-
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
-
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
-
-```{r}
-#| echo: false
-#| eval: true
-#| message: false
-#| warning: false
-#| label: fig-stanareyouokay
-#| fig-cap: "Checking the convergence of the MCMC algorithm"
-#| fig-subcap: ["Trace plot", "Rhat plot"]
-#| layout-ncol: 2
-
-plot(first_model, "trace")
-
-plot(first_model, "rhat")
-```
 
 
 
