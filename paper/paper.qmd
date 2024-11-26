@@ -23,6 +23,10 @@ library(here)
 library(arrow)
 library(scales)
 library(knitr)
+library(broom)
+library(rstanarm)
+library(kableExtra)
+library(broom.mixed)
 ```
 
 ```{r}
@@ -224,11 +228,67 @@ The standard deviation of 2.5 reflects moderate uncertainty in prior beliefs, al
 
 The logistic regression model was chosen for this study due to its suitability for predicting binary outcomes, in this case, whether an individual is categorized as "Not Married" or not. Logistic regression is widely used in social science research to understand relationships between a binary dependent variable and multiple independent variables, making it an ideal choice for analyzing marital status. This model allows for a straightforward interpretation of the effects of predictors, such as age, income, education, and gender, through odds ratios, providing insight into the likelihood of being "Not Married." The dataset contains a mix of continuous and categorical variables, and logistic regression can handle this diversity effectively. Additionally, its theoretical simplicity ensures that the analysis remains interpretable while maintaining robustness. The choice of this model aligns with the study’s goal of identifying significant factors associated with non-marriage in the U.S., providing actionable insights while being grounded in established statistical methods. Despite its assumptions, such as linearity in the log-odds and independence of observations, logistic regression offers the flexibility to incorporate interaction terms and account for a range of predictor variables, making it a powerful tool for this research.
 
-##Model Validation
+## Model Validation
+From @tbl-model-coefficients, the validation indicates that the logistic regression model provides a robust understanding of the predictors of "Not Married" status. However, some predictors, such as race, show variability in their impact, necessitating cautious interpretation. The model's good fit, coupled with well-defined confidence intervals and validation metrics, ensures that it provides reliable insights into the determinants of marital status.
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
 
-# Results
+# Load the saved final model
+bayesian_model <-
+  readRDS(file = here::here("models/bayesian_model.rds"))
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: tbl-model-coefficients
+#| tbl-cap: Summary of the model
+
+# Extract coefficients
+coefficients <- broom::tidy(bayesian_model, conf.int = TRUE)
+coefficients |> kable(digits = 2)
+```
+
+
+
+## Results
 
 Our results are summarized in @tbl-modelresults.
+
+``````{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+#| label: fig-coefficient
+#| fig-cap: Income Distribution for Unmarried Individuals
+
+# Preprocess the data to create a binary 'Not_Married' variable
+data$Not_Married <- ifelse(data$marital_status == "Not_Married", 1, 0)
+
+# Fit the logistic regression model
+model <- glm(Not_Married ~ age + gender + Race + Income + education_level, 
+             data = data, family = binomial())
+
+# Extract coefficients and confidence intervals
+model_summary <- broom::tidy(model, conf.int = TRUE)
+
+# Create the coefficient plot
+ggplot(model_summary, aes(x = term, y = estimate, ymin = conf.low, ymax = conf.high)) +
+  geom_pointrange(color = "orange") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  coord_flip() +
+  labs(
+    title = "Coefficients and Confidence Intervals from Logistic Regression",
+    x = "Predictors",
+    y = "Coefficient Value"
+  ) +
+  theme_minimal()
+```
 
 ```{r}
 #| echo: false
@@ -273,22 +333,6 @@ ggplot(unmarried_data, aes(x = age)) +
   ylab("Density") +
   theme_minimal()
 ```
-
-
-```{r}
-#| echo: false
-#| eval: true
-#| warning: false
-#| message: false
-
-library(rstanarm)
-
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
-```
-
-
-
 
 
 
