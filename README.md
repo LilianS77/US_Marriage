@@ -1,4 +1,4 @@
-# FactorsBehind Non-Marriage in the United States
+# Factors Behind Non-Marriage in the United States
 
 ## Overview
 
