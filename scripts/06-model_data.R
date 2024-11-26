@@ -1,37 +1,42 @@
 #### Preamble ####
-# Purpose: Models... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Build a Logistic Regression Model to assess the likelihood of an individual not being married (outcome variable)
+# Author: Xizi Sun
+# Date: 24 November 2024
+# Contact: xizi.sun@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Pre-requisites: The `tidyverse`, `rstanarm`, `arrow` and `here` package must be installed
 
 
 #### Workspace setup ####
+# Load required libraries
 library(tidyverse)
 library(rstanarm)
+library(arrow)
+library(here)
 
-#### Read data ####
-analysis_data <- read_csv("data/analysis_data/analysis_data.csv")
+#### Read the data and create model ####
+# Read the cleaned analysis dataset
+data <- read_parquet(here("data", "01-analysis_data", "analysis_data.parquet"))
 
-### Model data ####
-first_model <-
-  stan_glm(
-    formula = flying_time ~ length + width,
-    data = analysis_data,
-    family = gaussian(),
-    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_aux = exponential(rate = 1, autoscale = TRUE),
-    seed = 853
-  )
+# Ensure the marital_status variable is converted to a binary response variable
+analysis_data <- data %>%
+  mutate(Not_Married = ifelse(marital_status == "Not_Married", 1, 0))
 
+# Fit a Bayesian logistic regression model
+bayesian_model <- stan_glm(
+  Not_Married ~ age + gender + Race + Income + education_level,
+  data = analysis_data,
+  family = binomial(link = "logit"),
+  prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
+  prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
+  cores = 4,
+  adapt_delta = 0.99,
+  seed = 724
+)
 
 #### Save model ####
 saveRDS(
-  first_model,
-  file = "models/first_model.rds"
+  bayesian_model,
+  file = "models/bayesian_model.rds"
 )
-
 
