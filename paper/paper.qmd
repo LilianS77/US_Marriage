@@ -257,9 +257,9 @@ coefficients |> kable(digits = 2)
 
 ## Results
 
-Our results are summarized in @tbl-modelresults.
 
-``````{r}
+
+```{r}
 #| echo: false
 #| eval: true
 #| warning: false
@@ -283,7 +283,7 @@ ggplot(model_summary, aes(x = term, y = estimate, ymin = conf.low, ymax = conf.h
   geom_hline(yintercept = 0, linetype = "dashed") +
   coord_flip() +
   labs(
-    title = "Coefficients and Confidence Intervals from Logistic Regression",
+    title = "Coefficients and Confidence Intervals",
     x = "Predictors",
     y = "Coefficient Value"
   ) +
@@ -333,9 +333,115 @@ ggplot(unmarried_data, aes(x = age)) +
   ylab("Density") +
   theme_minimal()
 ```
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+#| label: fig-edu-marriage
+#| fig-cap: Proportions of Marital Status by Education Level
+#| 
+# Calculate proportions of marital status within each education level
+education_marital_status <- data %>%
+  group_by(education_level, marital_status) %>%
+  summarise(count = n()) %>%
+  ungroup() %>%
+  group_by(education_level) %>%
+  mutate(proportion = count / sum(count))
 
+# Create the stacked bar chart with percentages and orange/blue colors
+ggplot(education_marital_status, aes(x = education_level, y = proportion, fill = marital_status)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(
+    aes(label = scales::percent(proportion, accuracy = 1)),
+    position = position_stack(vjust = 0.5), size = 3.5, color = "white"
+  ) +
+  scale_fill_manual(values = c("Not_Married" = "#FFA500", "Married" = "#4682B4")) +
+  labs(
+    title = "Proportions of Marital Status by Education Level",
+    x = "Education Level",
+    y = "Proportion",
+    fill = "Marital Status"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+#| label: fig-race-marriage
+#| fig-cap: Proportions of Marital Status by Race
 
+# Calculate proportions of marital status within each race
+race_marital_status <- data %>%
+  group_by(Race, marital_status) %>%
+  summarise(count = n()) %>%
+  ungroup() %>%
+  group_by(Race) %>%
+  mutate(proportion = count / sum(count))
 
+# Create the stacked bar chart with annotations
+ggplot(race_marital_status, aes(x = Race, y = proportion, fill = marital_status)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(
+    aes(label = scales::percent(proportion, accuracy = 1)),
+    position = position_stack(vjust = 0.5), size = 3.5, color = "white"
+  ) +
+  scale_fill_manual(values = c("Not_Married" = "red", "Married" = "blue")) +
+  labs(
+    title = "Proportions of Marital Status by Race",
+    x = "Race",
+    y = "Proportion",
+    fill = "Marital Status"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+#| label: fig-gender-marriage
+#| fig-cap: Marital Status Proportions by Gender
+
+# Calculate proportions of marital status within each gender
+gender_marital_status <- data %>%
+  group_by(gender, marital_status) %>%
+  summarise(count = n()) %>%
+  ungroup() %>%
+  group_by(gender) %>%
+  mutate(
+    proportion = count / sum(count),
+    percentage_label = paste0(scales::percent(proportion, accuracy = 1))
+  )
+
+# Separate pie charts for each gender with percentage labels
+ggplot(gender_marital_status, aes(x = "", y = proportion, fill = marital_status)) +
+  geom_bar(stat = "identity", width = 1) +
+  geom_text(
+    aes(label = percentage_label),
+    position = position_stack(vjust = 0.5), size = 4, color = "white"
+  ) +
+  coord_polar("y", start = 0) +
+  facet_wrap(~gender) +
+  scale_fill_manual(values = c("Not_Married" = "#FF9999", "Married" = "#66B3FF")) +
+  labs(
+    title = "Marital Status Proportions by Gender",
+    x = NULL,
+    y = NULL,
+    fill = "Marital Status"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16),
+    strip.text = element_text(size = 14),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  )
+```
 # Discussion
 
 ## First discussion point {#sec-first-point}
