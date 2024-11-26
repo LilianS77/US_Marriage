@@ -257,7 +257,9 @@ coefficients |> kable(digits = 2)
 
 ## Results
 
+The analysis integrates multiple visualizations to provide a comprehensive understanding of the demographic, economic, and social dynamics associated with marital status. Below, we summarize the key findings derived from each visualization.
 
+The logistic regression coefficients, as shown in @fig-coefficient, highlight the significant predictors of marital status. Race emerges as a crucial factor, with individuals identifying as "RaceBlack" or "RaceAsian" having substantial negative coefficients, indicating a reduced likelihood of being unmarried compared to other racial groups. Educational attainment also plays a major role; lower educational levels such as "Below High School" and "High School" are associated with a higher probability of not being married, as evidenced by their positive coefficients. Gender and income also contribute, with males marginally more likely to remain unmarried, while income has a smaller yet notable influence.
 
 ```{r}
 #| echo: false
@@ -265,7 +267,7 @@ coefficients |> kable(digits = 2)
 #| warning: false
 #| message: false
 #| label: fig-coefficient
-#| fig-cap: Income Distribution for Unmarried Individuals
+#| fig-cap: Coefficients and Confidence Intervals
 
 # Preprocess the data to create a binary 'Not_Married' variable
 data$Not_Married <- ifelse(data$marital_status == "Not_Married", 1, 0)
@@ -283,13 +285,13 @@ ggplot(model_summary, aes(x = term, y = estimate, ymin = conf.low, ymax = conf.h
   geom_hline(yintercept = 0, linetype = "dashed") +
   coord_flip() +
   labs(
-    title = "Coefficients and Confidence Intervals",
     x = "Predictors",
     y = "Coefficient Value"
   ) +
   theme_minimal()
 ```
 
+@fig-Income-Unmarried depicts the income distribution of unmarried individuals, revealing that the majority of unmarried individuals fall into lower income brackets. The distribution is heavily skewed, with a significant concentration of individuals earning below $50,000 annually. The density sharply declines for higher income levels, reflecting the economic constraints that may influence marital status. A small proportion of high-income individuals remain unmarried, as shown by the long right tail of the distribution.
 ```{r}
 #| echo: false
 #| eval: true
@@ -305,14 +307,13 @@ unmarried_data <- data %>% filter(marital_status == "Not_Married")
 ggplot(unmarried_data, aes(x = Income)) +
   geom_histogram(aes(y = ..density..), bins = 30, fill = "skyblue", color = "black", alpha = 0.7) +
   geom_density(color = "blue", size = 1) +
-  ggtitle("Income Distribution for Unmarried Individuals") +
   xlab("Income") +
   ylab("Density") +
   scale_x_continuous(labels = comma) + # Format x-axis labels as regular numbers
   theme_minimal()
 ```
 
-
+@fig-Age-Unmarried shows the age distribution for unmarried individuals, which is dominated by younger age groups, particularly those in their 20s and early 30s. The density decreases substantially as age increases, illustrating that as individuals age, the likelihood of remaining unmarried diminishes. This trend aligns with societal norms where marriage becomes more prevalent in middle age, reflecting the intersection of age-related societal expectations and personal decision-making.
 ```{r}
 #| echo: false
 #| eval: true
@@ -328,11 +329,12 @@ unmarried_data <- data %>% filter(marital_status == "Not_Married")
 ggplot(unmarried_data, aes(x = age)) +
   geom_histogram(aes(y = ..density..), bins = 30, fill = "salmon", color = "black", alpha = 0.7) +
   geom_density(color = "red", size = 1) +
-  ggtitle("Age Distribution for Unmarried Individuals") +
   xlab("Age") +
   ylab("Density") +
   theme_minimal()
 ```
+
+The proportions of marital status by education level are presented in @fig-edu-marriage. Individuals with higher education levels, such as "Above Bachelor" and "Bachelor," show significantly lower proportions of unmarried individuals, at 16% and 25%, respectively. Conversely, those with lower educational attainment, such as "Below High School" and "Some College," exhibit higher proportions of unmarried individuals, with 32% in each group. This suggests that educational attainment serves as a strong predictor of marital outcomes, potentially due to its influence on economic stability and social networks.
 ```{r}
 #| echo: false
 #| eval: true
@@ -358,7 +360,6 @@ ggplot(education_marital_status, aes(x = education_level, y = proportion, fill =
   ) +
   scale_fill_manual(values = c("Not_Married" = "#FFA500", "Married" = "#4682B4")) +
   labs(
-    title = "Proportions of Marital Status by Education Level",
     x = "Education Level",
     y = "Proportion",
     fill = "Marital Status"
@@ -366,6 +367,9 @@ ggplot(education_marital_status, aes(x = education_level, y = proportion, fill =
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
+
+@fig-race-marriage and @fig-gender-marriage highlight the proportions of marital status by race and gender. Race disparities are evident, with "American Indian" and "Black" populations showing higher proportions of unmarried individuals, at 37% and 43%, respectively. In contrast, "White" and "Asian" groups exhibit the lowest proportions of unmarried individuals, at 24% and 30%, respectively. Gender analysis reveals that males are more likely to remain unmarried than females, with 30% of males unmarried compared to 26% of females. These findings underscore the intersection of cultural, economic, and societal factors in shaping marital trends across both race and gender.
+
 ```{r}
 #| echo: false
 #| eval: true
@@ -391,7 +395,6 @@ ggplot(race_marital_status, aes(x = Race, y = proportion, fill = marital_status)
   ) +
   scale_fill_manual(values = c("Not_Married" = "red", "Married" = "blue")) +
   labs(
-    title = "Proportions of Marital Status by Race",
     x = "Race",
     y = "Proportion",
     fill = "Marital Status"
@@ -429,7 +432,6 @@ ggplot(gender_marital_status, aes(x = "", y = proportion, fill = marital_status)
   facet_wrap(~gender) +
   scale_fill_manual(values = c("Not_Married" = "#FF9999", "Married" = "#66B3FF")) +
   labs(
-    title = "Marital Status Proportions by Gender",
     x = NULL,
     y = NULL,
     fill = "Marital Status"
