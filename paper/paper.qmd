@@ -175,8 +175,7 @@ To understand the phenomenon of non-marriage in the United States, I selected th
 
 # Model
 
-
-For this analysis, I employed a Logistic Regression Model to assess the likelihood of an individual not being married (outcome variable) based on several demographic and socioeconomic predictors (predictor variables). This model was chosen due to the binary nature of the outcome variable, which distinguishes between individuals who are "Not Married" versus those who are married (including divorced, widowed, or separated)..
+For this analysis, I employed a Logistic Regression Model to assess the likelihood of an individual not being married (outcome variable) based on several demographic and socioeconomic predictors (predictor variables). This model was chosen due to the binary nature of the outcome variable, which distinguishes between individuals who are "Not Married" versus those who are married (including divorced, widowed, or separated).
 
 Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
 
@@ -184,8 +183,6 @@ Here we briefly describe the Bayesian analysis model used to investigate... Back
 
 ### Objective
 The primary objective of the model is to analyze and predict the factors associated with individuals' marital status, focusing on identifying key predictors for individuals who have never been married (`Not_Married`).
-
-## Model Setup
 
 The logistic regression model used in this study is:
 
@@ -217,13 +214,17 @@ Where:
 - $\beta_5$: The coefficient for the education level.
 
 ### Priors Explanation
+
 In this model, normal priors with a mean of 0 and a standard deviation of 2.5 are assigned to all coefficients and the intercept. This choice reflects neutrality, implying no prior expectation of direction or magnitude for the coefficients. 
 
 The standard deviation of 2.5 reflects moderate uncertainty in prior beliefs, allowing the model to incorporate reasonable variability in predictor effects while avoiding overly restrictive priors.
 
 
-### Model justification
+## Model justification
 
+The logistic regression model was chosen for this study due to its suitability for predicting binary outcomes, in this case, whether an individual is categorized as "Not Married" or not. Logistic regression is widely used in social science research to understand relationships between a binary dependent variable and multiple independent variables, making it an ideal choice for analyzing marital status. This model allows for a straightforward interpretation of the effects of predictors, such as age, income, education, and gender, through odds ratios, providing insight into the likelihood of being "Not Married." The dataset contains a mix of continuous and categorical variables, and logistic regression can handle this diversity effectively. Additionally, its theoretical simplicity ensures that the analysis remains interpretable while maintaining robustness. The choice of this model aligns with the study’s goal of identifying significant factors associated with non-marriage in the U.S., providing actionable insights while being grounded in established statistical methods. Despite its assumptions, such as linearity in the log-odds and independence of observations, logistic regression offers the flexibility to incorporate interaction terms and account for a range of predictor variables, making it a powerful tool for this research.
+
+##Model Validation
 
 # Results
 
@@ -317,6 +318,11 @@ Weaknesses and next steps should also be included.
 
 To obtain data from IPUMS, we start by navigating to the IPUMS USA section and clicking on Get Data. Next, we go to the Select Sample section, where we uncheck the "Default sample from each year" option and instead select 2023 ACS. After selecting our sample, we proceed to add variables of interest. For individual-level data, we might add variables from the Person section. For example, under Demographic, we could include variables like AGE, and under Person, we could add SEX, RACE, INCTOT (total personal income) and EDUC (education attainment). Once our variables are selected, we click View Cart, then proceed by clicking Create Data Extract. At this point, we review our selections, change the Data Format to CSV, and submit our extract for processing. Then we saved it locally as usa_00001.csv.
 
+## Model Assumptions
+1. **Linearity**: The log odds of the outcome are linearly related to the predictors.
+2. **Independence**: Observations are independent of each other.
+3. **No Multicollinearity**: Predictors are not highly correlated.
+4. **No Outliers or Influential Points**: Checked through residual analysis.
 
 
 
