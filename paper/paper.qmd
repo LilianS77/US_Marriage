@@ -185,64 +185,41 @@ Here we briefly describe the Bayesian analysis model used to investigate... Back
 ### Objective
 The primary objective of the model is to analyze and predict the factors associated with individuals' marital status, focusing on identifying key predictors for individuals who have never been married (`Not_Married`).
 
-### Model Type
-A **logistic regression model** is chosen for this analysis, as the outcome variable (`marital_status`) is binary (e.g., `Not_Married` vs. `Married`).
+## Model Setup
 
-### Outcome Variable
-- **`marital_status`**: Encoded as:
-  - `1` for `Not_Married`
-  - `0` for `Married`
-
-### Predictor Variables
-The predictors include:
-1. **Age (`age`)**: A continuous variable representing the individual’s age.
-2. **Gender (`gender`)**: A categorical variable with levels `Male` and `Female`.
-3. **Race (`Race`)**: A categorical variable with multiple racial categories (e.g., `White`, `Black`, etc.).
-4. **Income (`Income`)**: A continuous variable representing the individual’s annual income.
-5. **Education Level (`education_level`)**: An ordinal variable with levels `Below_High_School`, `High_School`, `Some_College`, `Bachelor`, and `Above_Bachelor`.
-
-### Model Assumptions
-1. **Linearity**: The log odds of the outcome are linearly related to the predictors.
-2. **Independence**: Observations are independent of each other.
-3. **No Multicollinearity**: Predictors are not highly correlated.
-4. **No Outliers or Influential Points**: Checked through residual analysis.
-
-### Mathematical Representation
+The logistic regression model used in this study is:
 
 $$
-\log\left(\frac{P(\text{Not\_Married})}{1 - P(\text{Not\_Married})}\right) = \beta_0 + \beta_1 \cdot \text{age} + \beta_2 \cdot \text{gender} + \beta_3 \cdot \text{Race} + \beta_4 \cdot \text{Income} + \beta_5 \cdot \text{education\_level}
+\log \left( \frac{\hat{p}}{1 - \hat{p}} \right) = \beta_0 + \beta_1 \cdot \text{age} + \beta_2 \cdot \text{gender} + \beta_3 \cdot \text{Race} + \beta_4 \cdot \text{Income} + \beta_5 \cdot \text{education\_level}
+$$
+
+The priors for the coefficients are defined as:
+
+$$
+\begin{aligned}
+\beta_0 &\sim \text{Normal}(0, 2.5), \\
+\beta_1 &\sim \text{Normal}(0, 2.5), \\
+\beta_2 &\sim \text{Normal}(0, 2.5), \\
+\beta_3 &\sim \text{Normal}(0, 2.5), \\
+\beta_4 &\sim \text{Normal}(0, 2.5), \\
+\beta_5 &\sim \text{Normal}(0, 2.5). \\
+\end{aligned}
 $$
 
 Where:
-- \( P(\text{Not\_Married}) \) is the probability of being `Not_Married`.
 
-### Model Implementation Steps
-1. **Data Preprocessing**
-   - Encode categorical variables (e.g., `gender`, `Race`, `education_level`) using one-hot encoding or dummy variables.
-   - Normalize continuous variables like `age` and `Income` for better model performance.
-   - Split the data into training and testing sets (e.g., 80% train, 20% test).
+- $\hat{p}$: Represents the probability that an individual is classified as `Not_Married`.
+- $\beta_0$: The intercept term, representing the log-odds of being `Not_Married` when all predictors are zero.
+- $\beta_1$: The coefficient for the individual's age.
+- $\beta_2$: The coefficient for gender.
+- $\beta_3$: The coefficient for the race category.
+- $\beta_4$: The coefficient for annual income.
+- $\beta_5$: The coefficient for the education level.
 
-2. **Model Building**
-   - Use the `glm` function in R for logistic regression modeling.
-   - Define the formula as:
-     ```r
-     glm(marital_status ~ age + gender + Race + Income + education_level, 
-         data = training_data, 
-         family = "binomial")
-     ```
+### Priors Explanation
+In this model, normal priors with a mean of 0 and a standard deviation of 2.5 are assigned to all coefficients and the intercept. This choice reflects neutrality, implying no prior expectation of direction or magnitude for the coefficients. 
 
-3. **Validation and Performance**
-   - Evaluate the model using metrics such as:
-     - **Accuracy**: Proportion of correctly predicted observations.
-     - **ROC Curve and AUC**: To assess the tradeoff between sensitivity and specificity.
-     - **Confusion Matrix**: To evaluate true positives, true negatives, false positives, and false negatives.
-
-4. **Interpretation**
-   - Analyze the coefficients (\( \beta \)) to determine the relationship between predictors and the likelihood of being `Not_Married`.
-
-### Potential Limitations
-- Overfitting with too many predictors.
-- Missing data or imbalanced classes in the `marital_status` variable.
+The standard deviation of 2.5 reflects moderate uncertainty in prior beliefs, allowing the model to incorporate reasonable variability in predictor effects while avoiding overly restrictive priors.
 
 
 ### Model justification
