@@ -175,31 +175,77 @@ To understand the phenomenon of non-marriage in the United States, I selected th
 
 # Model
 
-The goal of our modelling strategy is twofold. Firstly,...
+
+For this analysis, I employed a Logistic Regression Model to assess the likelihood of an individual not being married (outcome variable) based on several demographic and socioeconomic predictors (predictor variables). This model was chosen due to the binary nature of the outcome variable, which distinguishes between individuals who are "Not Married" versus those who are married (including divorced, widowed, or separated)..
 
 Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
 
-## Model set-up
+## Model Setup
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
+### Objective
+The primary objective of the model is to analyze and predict the factors associated with individuals' marital status, focusing on identifying key predictors for individuals who have never been married (`Not_Married`).
 
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
+### Model Type
+A **logistic regression model** is chosen for this analysis, as the outcome variable (`marital_status`) is binary (e.g., `Not_Married` vs. `Married`).
 
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
+### Outcome Variable
+- **`marital_status`**: Encoded as:
+  - `1` for `Not_Married`
+  - `0` for `Married`
+
+### Predictor Variables
+The predictors include:
+1. **Age (`age`)**: A continuous variable representing the individual’s age.
+2. **Gender (`gender`)**: A categorical variable with levels `Male` and `Female`.
+3. **Race (`Race`)**: A categorical variable with multiple racial categories (e.g., `White`, `Black`, etc.).
+4. **Income (`Income`)**: A continuous variable representing the individual’s annual income.
+5. **Education Level (`education_level`)**: An ordinal variable with levels `Below_High_School`, `High_School`, `Some_College`, `Bachelor`, and `Above_Bachelor`.
+
+### Model Assumptions
+1. **Linearity**: The log odds of the outcome are linearly related to the predictors.
+2. **Independence**: Observations are independent of each other.
+3. **No Multicollinearity**: Predictors are not highly correlated.
+4. **No Outliers or Influential Points**: Checked through residual analysis.
+
+### Mathematical Representation
+
+$$
+\log\left(\frac{P(\text{Not\_Married})}{1 - P(\text{Not\_Married})}\right) = \beta_0 + \beta_1 \cdot \text{age} + \beta_2 \cdot \text{gender} + \beta_3 \cdot \text{Race} + \beta_4 \cdot \text{Income} + \beta_5 \cdot \text{education\_level}
+$$
+
+Where:
+- \( P(\text{Not\_Married}) \) is the probability of being `Not_Married`.
+
+### Model Implementation Steps
+1. **Data Preprocessing**
+   - Encode categorical variables (e.g., `gender`, `Race`, `education_level`) using one-hot encoding or dummy variables.
+   - Normalize continuous variables like `age` and `Income` for better model performance.
+   - Split the data into training and testing sets (e.g., 80% train, 20% test).
+
+2. **Model Building**
+   - Use the `glm` function in R for logistic regression modeling.
+   - Define the formula as:
+     ```r
+     glm(marital_status ~ age + gender + Race + Income + education_level, 
+         data = training_data, 
+         family = "binomial")
+     ```
+
+3. **Validation and Performance**
+   - Evaluate the model using metrics such as:
+     - **Accuracy**: Proportion of correctly predicted observations.
+     - **ROC Curve and AUC**: To assess the tradeoff between sensitivity and specificity.
+     - **Confusion Matrix**: To evaluate true positives, true negatives, false positives, and false negatives.
+
+4. **Interpretation**
+   - Analyze the coefficients (\( \beta \)) to determine the relationship between predictors and the likelihood of being `Not_Married`.
+
+### Potential Limitations
+- Overfitting with too many predictors.
+- Missing data or imbalanced classes in the `marital_status` variable.
 
 
 ### Model justification
-
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
-
-We can use maths by including latex between dollar signs, for instance $\theta$.
 
 
 # Results
@@ -264,21 +310,6 @@ first_model <-
 ```
 
 
-```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
-#| warning: false
-
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
-```
 
 
 
