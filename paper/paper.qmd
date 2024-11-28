@@ -106,14 +106,19 @@ marital_status_df <- as.data.frame(marital_status_counts)
 colnames(marital_status_df) <- c("Marital_Status", "Count")
 marital_status_df$Proportion <- marital_status_df$Count / sum(marital_status_df$Count)
 
-# Plot
-ggplot(marital_status_df, aes(x = Marital_Status, y = Proportion, fill = Marital_Status)) +
-  geom_bar(stat = "identity") +
+# Add percentage labels
+marital_status_df$Percentage <- paste0(round(marital_status_df$Proportion * 100, 1), "%")
+
+# Plot the pie chart with percentage labels
+ggplot(marital_status_df, aes(x = "", y = Proportion, fill = Marital_Status)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +
+  geom_text(aes(label = Percentage), position = position_stack(vjust = 0.5)) +
   labs(
-    x = "Marital Status",
-    y = "Proportion"
+    fill = "Marital Status",
+    title = "Distribution of Marital Status"
   ) +
-  theme_minimal()
+  theme_void()
 ```
 
 ### Predictor variables
@@ -130,7 +135,7 @@ This section focuses on the predictor variables included in the study. The distr
 #| echo: false
 #| warning: false
 #| message: false
-#| fig-cap: fig-predictor-variables
+#| fig-cap: Counts for Demographic Variables
 #| fig-subcap: ["Age Distribution", "Gender Distribution", "Race Distribution", "Education Level Distribution", "Income Distribution"]
 #| label: fig-predictor-variables
 #| layout-ncol: 2
@@ -258,7 +263,7 @@ The logistic regression coefficients, as shown in @fig-coefficient, highlight th
 #| warning: false
 #| message: false
 #| label: fig-coefficient
-#| fig-cap: Coefficients and Confidence Intervals
+#| fig-cap: Coefficients of The Model
 
 # Preprocess the data to create a binary 'Not_Married' variable
 data$Not_Married <- ifelse(data$marital_status == "Not_Married", 1, 0)
