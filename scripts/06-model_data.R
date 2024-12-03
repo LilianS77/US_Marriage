@@ -23,7 +23,7 @@ analysis_data <- data %>%
   mutate(Not_Married = ifelse(marital_status == "Not_Married", 1, 0))
 
 # Fit a Bayesian logistic regression model
-bayesian_model <- stan_glm(
+logistic_model <- stan_glm(
   Not_Married ~ age + gender + Race + Income + education_level,
   data = analysis_data,
   family = binomial(link = "logit"),
@@ -36,7 +36,7 @@ bayesian_model <- stan_glm(
 
 #### Save model ####
 saveRDS(
-  bayesian_model,
-  file = "models/bayesian_model.rds"
+  logistic_model,
+  file = "models/logistic_model.rds"
 )
 
