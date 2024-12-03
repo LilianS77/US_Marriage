@@ -421,7 +421,7 @@ ggplot(gender_marital_status, aes(x = "", y = proportion, fill = marital_status)
 
 This study investigates the socio-demographic factors influencing marital status, focusing on the probability of remaining unmarried in the United States. Through logistic regression analysis applied to individual-level microdata, significant predictors such as education, income, race, gender, and age were identified.
 
-Higher education levels were strongly associated with lower non-marriage rates. For instance, Figure @fig-edu-marriage shows that only 16% of individuals with education above a bachelor’s degree were unmarried, compared to 32% for those with "Some College" education. Logistic regression coefficients further underscore this trend, with individuals holding higher degrees being substantially less likely to remain unmarried (e.g., the coefficient for "Below High School" = 0.48). Education thus acts as a stabilizing factor, equipping individuals with economic resources and social networks conducive to marriage.
+Higher education levels were strongly associated with lower non-marriage rates. For instance, @fig-edu-marriage shows that only 16% of individuals with education above a bachelor’s degree were unmarried, compared to 32% for those with "Some College" education. Logistic regression coefficients further underscore this trend, with individuals holding higher degrees being substantially less likely to remain unmarried (e.g., the coefficient for "Below High School" = 0.48). Education thus acts as a stabilizing factor, equipping individuals with economic resources and social networks conducive to marriage.
 
 Similarly, income plays a complementary but less pronounced role. @fig-income-distribution illustrates that unmarried individuals tend to cluster in lower income brackets, with the majority earning less than $40,000 annually. This highlights the persistent importance of financial stability in marital decisions, although its impact appears secondary to education.
 
@@ -431,7 +431,7 @@ These findings reinforce how individual socio-demographic traits intersect with 
 
 ## Insights into Education, Income, and Marriage Patterns
 
-Education emerged as the most significant predictor in this analysis. Higher education levels correlate strongly with lower non-marriage rates, as depicted in @fig-edu-marriage and @fig-coefficient. These findings align with theories suggesting that education enhances economic stability, expands social capital, and provides greater agency in life choices, all of which promote marriage. However, as @fig-income-distribution indicates, financial stability remains an essential but secondary factor in marital decisions.
+Education emerged as the most significant predictor in this analysis. Higher education levels correlate strongly with lower non-marriage rates, as depicted in @fig-edu-marriage and @fig-coefficient. These findings align with theories suggesting that education enhances economic stability, expands social capital, and provides greater agency in life choices, all of which promote marriage. However, as @fig-Income-Unmarried indicates, financial stability remains an essential but secondary factor in marital decisions.
 
 The interplay between education and income underscores broader socio-economic disparities. For example, individuals with lower education levels not only face limited economic opportunities but are also more likely to remain unmarried, perpetuating cycles of inequality in family formation.
 
@@ -465,7 +465,7 @@ By addressing these structural barriers, policymakers and institutions can promo
 
 ### Cleaned Data
 
-The table [@tbl-cleaned-data] shows the analysis data after data cleaning. 
+The @tbl-cleaned-data shows the analysis data after data cleaning. 
 
 ```{r}
 #| label: tbl-cleaned-data
