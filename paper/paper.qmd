@@ -1,12 +1,12 @@
 ---
-title: "Who Stays Single? Exploring the Factors Behind Non-Marriage in the United States"
+title: "Who Stays Single? Exploring the Factors Behind Non-Marriage in the United States in 2023"
 subtitle: "Low Income and Education Levels Correlate with Higher Propensity to Remain Unmarried"
 author: 
   - Xizi Sun
 thanks: "Code and data are available at: https://github.com/LilianS77/US_Marriage."
 date: today
 date-format: long
-abstract: "This study examines the socio-demographic determinants of non-marriage in the United States using logistic regression analysis on individual-level data. The findings highlight that individuals with lower income and education levels, particularly below a bachelor’s degree, are significantly more likely to remain unmarried. Additionally, gender and race also play critical roles, with men and certain racial groups, such as African Americans, showing higher unmarried rates. These results underscore structural inequities and socio-economic barriers shaping marital outcomes, offering insights into broader societal patterns and potential areas for intervention."
+abstract: "This study examines the socio-demographic determinants of non-marriage in the United States in 2023 using logistic regression analysis on individual-level data. The findings highlight that individuals with lower income and education levels, particularly below a bachelor’s degree, are significantly more likely to remain unmarried. Additionally, gender and race also play critical roles, with men and certain racial groups, such as African Americans, showing higher unmarried rates. These results underscore structural inequities and socio-economic barriers shaping marital outcomes, offering insights into broader societal patterns and potential areas for intervention."
 format: pdf
 number-sections: true
 toc: true
@@ -28,6 +28,7 @@ library(broom)
 library(rstanarm)
 library(kableExtra)
 library(broom.mixed)
+library(bayesplot)
 ```
 
 ```{r}
@@ -41,54 +42,29 @@ data <- read_parquet(here("data", "01-analysis_data", "analysis_data.parquet"))
 
 # Introduction
 
-Marriage is often regarded as a cornerstone of social and economic stability, shaping the lives of individuals and the broader dynamics of society. However, in recent decades, the United States has experienced a notable shift in marital patterns, with an increasing proportion of the population remaining unmarried. This trend raises essential questions about the underlying factors contributing to the decision not to marry and the societal implications of such changes. Addressing these questions is vital for understanding broader socio-economic inequalities and cultural dynamics.
+Marriage is widely perceived as a fundamental element of both social cohesion and economic stability. It profoundly influences individual lives and the broader social fabric. In recent decades, however, marital patterns in the United States have shifted noticeably, with a growing proportion of individuals choosing to remain unmarried. This trend prompts important questions about the factors underlying these decisions and the broader societal impacts of such changes. Understanding these issues is essential for addressing wider socio-economic inequalities and cultural transformations.
 
-This paper examines the determinants of non-marriage by analyzing a rich dataset from IPUMS USA [@ipumsusa], which offers harmonized census and survey data spanning demographic, social, and economic variables. Prior studies have largely focused on individual aspects of marital behavior, such as income or education, but few have comprehensively analyzed the intersection of multiple socio-demographic factors. This study bridges that gap by exploring the combined effects of socio-demographic factors. Specifically, the estimand of this study is the reason of an individual remaining unmarried, conditioned on their socio-demographic attributes, including education level, income, race, gender, and age. This focus allows for a nuanced understanding of how these factors interact to influence marital decisions.
+This study investigates the determinants of non-marriage by utilizing a dataset from IPUMS USA [@ipumsusa], which provides survey data encompassing demographic, social, and economic variables. While previous research has primarily examined individual factors like education or income in isolation, few studies have explored the interplay between multiple socio-demographic factors in shaping marital decisions. This research addresses this shortfall by analyzing these factors in combination.
 
-Using logistic regression analysis, the results reveal compelling patterns: individuals with higher education levels are more likely to marry, and economic stability, as indicated by higher income, is positively associated with marital status. Moreover, significant disparities are observed across racial and gender groups. African Americans exhibit higher non-marriage rates, while males show slightly elevated probabilities of remaining unmarried compared to females. These findings highlight persistent structural inequalities and cultural nuances shaping marriage in contemporary America.
+The estimand of this study is the reason an individual remains unmarried, analyzed in the context of their socio-demographic characteristics, including education level, income, race, gender, and age. This approach enables a deeper understanding of how these attributes collectively influence marital behavior.
 
-Understanding the factors influencing non-marriage is crucial for addressing broader societal issues, including economic inequality, cultural shifts, and demographic changes. Marriage is often linked to financial stability, access to social networks, and overall well-being. The disparities uncovered in this study highlight systemic inequities that disproportionately affect certain groups, such as racial minorities and individuals with lower educational attainment. By identifying these disparities, policymakers and social institutions can better target interventions to reduce inequalities, promote inclusive opportunities for stable relationships, and adapt to the changing dynamics of family structures in modern society.
+The findings, derived through logistic regression analysis, reveal significant patterns. Higher education levels are strongly linked to higher marriage rates, while economic stability, as indicated by higher income, positively correlates with marital status. Marked disparities are evident among racial and gender groups. African Americans, for instance, demonstrate higher rates of non-marriage, whereas males are slightly more likely to remain unmarried than females. These findings underscore persistent structural inequities and cultural complexities influencing marriage in contemporary American society. Recognizing these inequities equips policymakers and social institutions to design targeted interventions that address inequality, foster opportunities for stable relationships, and adapt to evolving family dynamics in modern society.
 
-The remainder of this paper is organized as follows. @sec-data describes the dataset, variable selection, and measurement strategies used to examine marital status. @sec-model outlines the logistic regression approach, including the rationale behind model choice, prior specifications, and validation methods. @sec-results section presents key findings, supported by visualizations, and highlights the roles of education, income, race, gender, and age in predicting non-marriage. Finally, @sec-discussion explores the implications of these findings, acknowledges limitations, and proposes directions for future research.
+The structure of this paper is as follows: @sec-data explains the dataset, variable selection, and measurement strategies employed to study marital status. @sec-model discusses the logistic regression methodology, including model rationale, prior specifications, and validation processes. @sec-results presents the key findings with supporting visualizations, emphasizing the roles of education, income, race, gender, and age in predicting non-marriage. Finally, @sec-discussion delves into the implications of the findings, acknowledges study limitations, and outlines potential areas for future research.
+
 
 # Data {#sec-data}
 
 ## Data Tool
 
-The dataset was analyzed using R [@citeR] and utilized several R packages for data manipulation, visualization, and analysis, including ggplot2 [@ggplot2] for creating elegant graphics, dplyr [@citeDplyr] for data wrangling, and here [@citeHere] for simplifying file management. The data was processed efficiently using Apache Arrow [@citeArrow], and visualizations were further enhanced with the scales package [@citeScales]. Bayesian modeling was implemented using rstanarm [@citeRstanarm], while statistical results were tidied with broom [@citeBroom] and broom.mixed [@citeBroomMixed]. Tables were constructed using kableExtra [@citeKableExtra] for a polished presentation. Reproducibility was ensured with knitr [@citeKnitr]. Data was extracted from IPUMS USA [@ipumsusa], and guidance on storytelling with data was drawn from Telling Stories with Data [@tellingstories].
+The dataset was analyzed using R [@citeR] and utilized several R packages for data manipulation, visualization, and analysis, including ggplot2 [@ggplot2] for creating elegant graphics, dplyr [@citeDplyr] for data wrangling, and here [@citeHere] for simplifying file management. The data was processed efficiently using Apache Arrow [@citeArrow], and visualizations were further enhanced with the scales package [@citeScales]. logistic regression modeling was implemented using rstanarm [@citeRstanarm], while statistical results were tidied with broom [@citeBroom] and broom.mixed [@citeBroomMixed]. Tables were constructed using kableExtra [@citeKableExtra] for a polished presentation. Reproducibility was ensured with knitr [@citeKnitr]. The bayesplot package [@citeBayesplot] was utilized for visualizing Bayesian model diagnostics and posterior predictive checks. Data was extracted from IPUMS USA [@ipumsusa], and guidance on storytelling with data was drawn from Telling Stories with Data [@tellingstories].
 
-## Data Source And Measurement
+## Measurement
 
-The data used for this study was sourced from **IPUMS USA (Integrated Public Use Microdata Series)** [@ipumsusa], a comprehensive repository providing access to harmonized census and survey data from the United States. IPUMS USA is renowned for its meticulous process of standardizing variables across datasets, ensuring compatibility over time, and providing extensive metadata to support research. This harmonization process enables researchers to conduct longitudinal and cross-sectional studies on social, demographic, and economic trends.
+For this study, data was specifically drawn from the American Community Survey (ACS) [@citeACS], a critical subset of IPUMS. The ACS conducts ongoing data collection throughout the year, selecting approximately 250,000 addresses each month to ensure the population's most current representation. The survey employs several collection methods to maximize participation. Initially, respondents receive a request to complete the survey online or return a paper questionnaire via mail. If no response is received, follow-up contact is made through telephone, utilizing a computer-assisted interview system (CATI). For those who remain unresponsive, a portion—approximately one-third—is selected for an in-person, computer-assisted personal interview (CAPI). In addition, the survey covers a wide range of social, economic and demographic characteristics, such as the variables of marital status, age and education analyzed in this study.
 
-The dataset consists of **individual-level microdata**, where each record represents a single person, numerically coded for all relevant characteristics. These records are organized into households, allowing for the study of individual behaviors and characteristics in the context of their family or co-residential settings. Unlike compiled statistics or pre-aggregated tables, this microdata structure provides researchers with unparalleled flexibility in exploring relationships between variables.
-
-To address the diversity of record layouts, coding schemes, and documentation across the historical scope of the dataset, IPUMS implements a rigorous **harmonization process**. Variables are assigned **uniform codes**, ensuring consistency across census years (1850–2010) and the American Community Surveys (ACS) (2000–present). This standardization simplifies the analysis of long-term trends and facilitates comparisons across time and space.
-
-## Variable Selection
-
-Using the IPUMS data extraction system, this study selected a focused subset of variables to examine the determinants of **non-marriage** in the United States. These include key demographic and socioeconomic characteristics, which are numerically coded for statistical analysis.
-
-The table [@tbl-cleaned-data] shows the variables after data cleaning, 
-
-```{r}
-#| label: tbl-cleaned-data
-#| tbl-cap: Sample of cleaned data
-#| echo: false
-#| warning: false
-#| message: false
-
-
-# Display the first 6 rows of the dataset with column names
-head(data[, c("marital_status", "age", "gender", "Race", "Income", "education_level")], 6) |>
-  kable(
-    col.names = c("Marital Status", "Age", "Gender", "Race", "Income", "Education Level"),
-    booktabs = TRUE
-  )
-```
-
-### Outcome variables
-The primary outcome variable for this study is **Marital Status**, which categorizes individuals based on their marital state. The proportion of marital status categories is displayed in figure @fig-proportion-marriage. This variable allows for a comparison between individuals who have never married (`Not_Married`) and those who have (`Married`). For this study,
+## Outcome Variables
+The primary outcome variable for this study is **Marital Status**, which categorizes individuals based on their marital state. The proportion of marital status categories is displayed in @fig-proportion-marriage. This variable allows for a comparison between individuals who have never married (`Not_Married`) and those who have (`Married`). For this study,
 **Not_Married**: Includes individuals who have never been married.
 **Married**: Includes individuals who are married, as well as those who are divorced, widowed, or separated.
 
@@ -121,9 +97,9 @@ ggplot(marital_status_df, aes(x = "", y = Proportion, fill = Marital_Status)) +
   theme_void()
 ```
 
-### Predictor variables
+## Predictor Variables
 
-This section focuses on the predictor variables included in the study. The distribution of predictor variables is displayed in Figure @fig-predictor-variables. These variables capture demographic, socioeconomic, and personal characteristics, providing a comprehensive framework for analyzing factors associated with marital status. Below are the key predictor variables:
+The distribution of predictor variables is displayed in @fig-predictor-variables-marital-status. These variables capture demographic, socioeconomic, and personal characteristics, providing a comprehensive framework for analyzing factors associated with marital status. Below are the key predictor variables:
 
 1. **Age**: A continuous variable representing the respondent's age in years.
 2. **Gender**: A categorical variable indicating whether the respondent is male or female. Gender differences often play a role in marital patterns.
@@ -131,53 +107,51 @@ This section focuses on the predictor variables included in the study. The distr
 4. **Education Level**: An ordinal variable indicating the highest level of education attained by the respondent. It is grouped into five categories: Below High School, High School, Some College, Bachelor’s Degree, and Above Bachelor.
 5. **Income**: A continuous variable measuring the respondent's annual income in dollars. Income reflects economic resources and may be associated with marital stability and decisions.
 
+The unmarried results of the predictor variables are displayed in the @sec-results.
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
-#| fig-cap: Counts for Demographic Variables
-#| fig-subcap: ["Age Distribution", "Gender Distribution", "Race Distribution", "Education Level Distribution", "Income Distribution"]
-#| label: fig-predictor-variables
+#| fig-cap: Counts for Demographic Variables by Marital Status
+#| fig-subcap: ["Age Distribution by Marital Status", "Gender Distribution by Marital Status", "Race Distribution by Marital Status", "Education Level Distribution by Marital Status", "Income Distribution by Marital Status"]
+#| label: fig-predictor-variables-marital-status
 #| layout-ncol: 2
 
-# Function to create a bar plot or histogram
-create_plot <- function(data, x_var, x_label, is_continuous = FALSE, binwidth = NULL) {
+# Function to create a bar plot or histogram with marital status differentiation
+create_plot_marital <- function(data, x_var, x_label, is_continuous = FALSE, binwidth = NULL) {
   if (is_continuous) {
-    # Create a histogram for continuous variables
-    p <- ggplot(data, aes_string(x = x_var)) +
-      geom_histogram(binwidth = binwidth, fill = "skyblue", color = "black") +
-      labs(x = x_label, y = "Count") +
+    # Create a histogram for continuous variables with marital status
+    p <- ggplot(data, aes_string(x = x_var, fill = "marital_status")) +
+      geom_histogram(binwidth = binwidth, position = "dodge", color = "black") +
+      labs(x = x_label, y = "Count", fill = "Marital Status") +
       theme_minimal() +
       theme(axis.text.x = element_text(angle = 45, hjust = 1))
   } else {
-    # Create a bar chart for categorical variables
-    p <- ggplot(data, aes_string(x = x_var)) +
-      geom_bar(fill = "skyblue", color = "black") +
-      labs(x = x_label, y = "Count") +
+    # Create a bar chart for categorical variables with marital status
+    p <- ggplot(data, aes_string(x = x_var, fill = "marital_status")) +
+      geom_bar(position = "dodge", color = "black") +
+      labs(x = x_label, y = "Count", fill = "Marital Status") +
       theme_minimal() +
       theme(axis.text.x = element_text(angle = 45, hjust = 1))
   }
   return(p)
 }
 
-# Create plots for the predictor variables
-create_plot(data, "age", "Age", is_continuous = TRUE, binwidth = 5)
-create_plot(data, "gender", "Gender")
-create_plot(data, "Race", "Race")
-create_plot(data, "education_level", "Education Level")
-create_plot(data, "Income", "Income", is_continuous = TRUE, binwidth = 10000)
-
+# Create plots for the predictor variables by marital status
+create_plot_marital(data, "age", "Age", is_continuous = TRUE, binwidth = 5)
+create_plot_marital(data, "gender", "Gender")
+create_plot_marital(data, "Race", "Race")
+create_plot_marital(data, "education_level", "Education Level")
+create_plot_marital(data, "Income", "Income", is_continuous = TRUE, binwidth = 10000)
 ```
 
 ## Data Selection
 	
-To understand the phenomenon of non-marriage in the United States, I selected the IPUMS USA dataset over alternatives such as IPUMS International. While IPUMS International provides harmonized census data from 104 countries with over 1 billion person records, its vast scope makes it less targeted for this study. My focus is specifically on the U.S. population, and IPUMS USA offers high-precision data from American Community Surveys (ACS) and federal censuses, making it a more suitable choice for studying societal patterns specific to the United States.
+To examine the phenomenon of non-marriage in the United States, the IPUMS USA dataset was chosen as the primary data source, rather than IPUMS International. Although IPUMS International includes harmonized census data from 104 countries and encompasses over one billion individual records, its broad, global scope renders it less aligned with the objectives of this study. This research focuses specifically on societal patterns within the U.S. population. IPUMS USA, with its data derived from the American Community Surveys (ACS) and federal censuses, provides the precision and relevance needed to investigate non-marriage trends in the United States.
 
 # Model {#sec-model}
 
-For this analysis, I employed a Logistic Regression Model to assess the likelihood of an individual not being married (outcome variable) based on several demographic and socioeconomic predictors (predictor variables). This model was chosen due to the binary nature of the outcome variable, which distinguishes between individuals who are "Not Married" versus those who are married (including divorced, widowed, or separated).
-
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
+For this analysis, I apply a Logistic Regression Model to assess the likelihood of an individual not being married (outcome variable) based on several demographic and socioeconomic predictors (predictor variables). This model was chosen due to the binary nature of the outcome variable, which distinguishes between individuals who are "Not Married" versus those who are married (including divorced, widowed, or separated).
 
 ## Model Setup
 
@@ -219,13 +193,21 @@ In this model, normal priors with a mean of 0 and a standard deviation of 2.5 ar
 
 The standard deviation of 2.5 reflects moderate uncertainty in prior beliefs, allowing the model to incorporate reasonable variability in predictor effects while avoiding overly restrictive priors.
 
+## Model Justification
 
-## Model justification
+The logistic regression model was chosen for this study due to its suitability in predicting binary outcomes. Specifically, it was employed to classify individuals as either "Not Married" or otherwise. This method is widely used in social science research to analyze the relationship between a binary dependent variable and several independent variables. It is therefore well-suited for examining patterns in marital status.
 
-The logistic regression model was chosen for this study due to its suitability for predicting binary outcomes, in this case, whether an individual is categorized as "Not Married" or not. Logistic regression is widely used in social science research to understand relationships between a binary dependent variable and multiple independent variables, making it an ideal choice for analyzing marital status. This model allows for a straightforward interpretation of the effects of predictors, such as age, income, education, and gender, through odds ratios, providing insight into the likelihood of being "Not Married." The dataset contains a mix of continuous and categorical variables, and logistic regression can handle this diversity effectively. Additionally, its theoretical simplicity ensures that the analysis remains interpretable while maintaining robustness. The choice of this model aligns with the study’s goal of identifying significant factors associated with non-marriage in the U.S., providing actionable insights while being grounded in established statistical methods. Despite its assumptions, such as linearity in the log-odds and independence of observations, logistic regression offers the flexibility to incorporate interaction terms and account for a range of predictor variables, making it a powerful tool for this research.
+The decisions regarding model design were guided by the dataset's structure and the variables under analysis. For instance, age was treated as a continuous variable to preserve its detail and avoid arbitrary groupings. Gender was modeled as a categorical variable with two levels—male and female—to reflect its binary nature in the data. Each racial category was included as a distinct level to capture the unique effects associated with different racial groups. Similarly, education and income were retained in their granular forms to maximize the use of the dataset’s available information.
 
-## Model Validation
-From @tbl-model-coefficients, the validation indicates that the logistic regression model provides a robust understanding of the predictors of "Not Married" status. However, some predictors, such as race, show variability in their impact, necessitating cautious interpretation. The model's good fit, coupled with well-defined confidence intervals and validation metrics, ensures that it provides reliable insights into the determinants of marital status.
+While the method depends on certain assumptions, such as linearity in the log-odds and independence of observations, it allows for the inclusion of interaction terms and accommodates a wide range of predictors. This balance of clarity, flexibility, and alignment with the study's objectives makes logistic regression an effective choice for this research.
+
+Posterior checks for the model and MCMC convergence check can be found in @sec-model-details.
+
+# Results {#sec-results}
+
+This study integrates multiple visualizations to provide a comprehensive understanding of the demographic, economic, and social dynamics associated with marital status. Below, we summarize the key findings derived from each visualization.
+
+@fig-coefficient and @tbl-model-summary highlight the coefficients for RaceWhite, RaceOther, and RaceAsian are negative, indicating that individuals from these racial groups are less likely to remain unmarried compared to others. The coefficient for RaceBlack is positive, and its confidence interval does not include 0, suggesting that RaceBlack group are more likely to remain unmarried compared to other racial groups. Individuals with lower levels of education (e.g., below high school) have a higher likelihood of remaining unmarried. The coefficient for males is positive, indicating that men are slightly more likely to remain unmarried compared to female.
 ```{r}
 #| echo: false
 #| eval: true
@@ -233,29 +215,21 @@ From @tbl-model-coefficients, the validation indicates that the logistic regress
 #| message: false
 
 # Load the saved final model
-bayesian_model <-
-  readRDS(file = here::here("models/bayesian_model.rds"))
+logistic_model <-
+  readRDS(file = here::here("models/logistic_model.rds"))
 ```
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
-#| label: tbl-model-coefficients
+#| label: tbl-model-summary
 #| tbl-cap: Summary of the model
 
 # Extract coefficients
-coefficients <- broom::tidy(bayesian_model, conf.int = TRUE)
+coefficients <- broom::tidy(logistic_model, conf.int = TRUE)
 coefficients |> kable(digits = 2)
 ```
-
-
-
-## Results {#sec-results}
-
-The analysis integrates multiple visualizations to provide a comprehensive understanding of the demographic, economic, and social dynamics associated with marital status. Below, we summarize the key findings derived from each visualization.
-
-The logistic regression coefficients, as shown in @fig-coefficient, highlight the significant predictors of marital status. Race emerges as a crucial factor, with individuals identifying as "RaceBlack" or "RaceAsian" having substantial negative coefficients, indicating a reduced likelihood of being unmarried compared to other racial groups. Educational attainment also plays a major role; lower educational levels such as "Below High School" and "High School" are associated with a higher probability of not being married, as evidenced by their positive coefficients. Gender and income also contribute, with males marginally more likely to remain unmarried, while income has a smaller yet notable influence.
 
 ```{r}
 #| echo: false
@@ -309,7 +283,7 @@ ggplot(unmarried_data, aes(x = Income)) +
   theme_minimal()
 ```
 
-@fig-Age-Unmarried shows the age distribution for unmarried individuals, which is dominated by younger age groups, particularly those in their 20s and early 30s. The density decreases substantially as age increases, illustrating that as individuals age, the likelihood of remaining unmarried diminishes. This trend aligns with societal norms where marriage becomes more prevalent in middle age, reflecting the intersection of age-related societal expectations and personal decision-making.
+@fig-Age-Unmarried shows the age distribution for unmarried individuals, which is dominated by younger age groups, particularly those in their 20s and early 30s. The density decreases substantially as age increases, illustrating that as individuals age, the likelihood of remaining unmarried diminishes.
 ```{r}
 #| echo: false
 #| eval: true
@@ -330,7 +304,7 @@ ggplot(unmarried_data, aes(x = age)) +
   theme_minimal()
 ```
 
-The proportions of marital status by education level are presented in @fig-edu-marriage. Individuals with higher education levels, such as "Above Bachelor" and "Bachelor," show significantly lower proportions of unmarried individuals, at 16% and 25%, respectively. Conversely, those with lower educational attainment, such as "Below High School" and "Some College," exhibit higher proportions of unmarried individuals, with 32% in each group. This suggests that educational attainment serves as a strong predictor of marital outcomes, potentially due to its influence on economic stability and social networks.
+The proportions of marital status by education level are presented in @fig-edu-marriage. Individuals with higher education levels show significantly lower proportions of unmarried individuals, with 25% for those holding a bachelor's degree and 16% for those with education above a bachelor's degree. In contrast, individuals with lower educational attainment exhibit higher proportions of unmarried individuals, with 32%, 31%, and 32% for those with below high school, high school, and some college education, respectively.
 ```{r}
 #| echo: false
 #| eval: true
@@ -364,7 +338,7 @@ ggplot(education_marital_status, aes(x = education_level, y = proportion, fill =
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-@fig-race-marriage and @fig-gender-marriage highlight the proportions of marital status by race and gender. Race disparities are evident, with "American Indian" and "Black" populations showing higher proportions of unmarried individuals, at 37% and 43%, respectively. In contrast, "White" and "Asian" groups exhibit the lowest proportions of unmarried individuals, at 24% and 30%, respectively. Gender analysis reveals that males are more likely to remain unmarried than females, with 30% of males unmarried compared to 26% of females. These findings underscore the intersection of cultural, economic, and societal factors in shaping marital trends across both race and gender.
+@fig-race-marriage and @fig-gender-marriage highlight the proportions of marital status by race and gender. Race disparities are evident, with "American Indian" and "Black" populations showing higher proportions of unmarried individuals, at 37% and 43%, respectively. In contrast, "White" and "Asian" groups exhibit the lowest proportions of unmarried individuals, at 24% and 30%, respectively. Gender analysis reveals that males are more likely to remain unmarried than females, with 30% of males unmarried compared to 26% of females. 
 
 ```{r}
 #| echo: false
@@ -398,6 +372,7 @@ ggplot(race_marital_status, aes(x = Race, y = proportion, fill = marital_status)
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
+
 ```{r}
 #| echo: false
 #| eval: true
@@ -446,7 +421,7 @@ ggplot(gender_marital_status, aes(x = "", y = proportion, fill = marital_status)
 
 This study delves into the socio-demographic factors that influence marital status, with a specific focus on the probability of remaining unmarried in the United States. By analyzing individual-level microdata through logistic regression, we identified significant predictors such as education, income, race, gender, and age.
 
-For instance, the logistic regression model revealed that individuals with higher education levels, particularly those with a bachelor's degree or more, were significantly less likely to remain unmarried compared to those with lower education levels. Education, therefore, serves as a strong stabilizer in marital outcomes, providing individuals with economic resources and social capital that facilitate marriage. Simultaneously, the analysis underscored the heightened likelihood of remaining unmarried among African Americans, reflecting deeper structural inequities that impact marital patterns. Gender also emerged as a significant factor, with males exhibiting a slightly higher probability of being unmarried compared to females.
+For instance, the logistic regression model revealed that individuals with higher education levels, particularly those with a bachelor's degree or above, were significantly less likely to remain unmarried compared to those with lower education levels. Education, therefore, serves as a strong stabilizer in marital outcomes, providing individuals with economic resources and social capital that facilitate marriage. Simultaneously, the analysis underscored the heightened likelihood of remaining unmarried among African Americans, reflecting deeper structural inequities that impact marital patterns. Gender also emerged as a significant factor, with males exhibiting a slightly higher probability of being unmarried compared to females.
 
 These findings, grounded in data and supported by statistical rigor, affirm prior literature while adding layers of nuance. They emphasize how individual socio-demographic traits intersect with broader societal structures to shape marital outcomes.
 
@@ -486,17 +461,271 @@ The findings highlight the socio-economic inequities that shape family formation
 
 # Appendix
 
-## How to Extract 2022 ACS Data from IPUMS
+## Data Details {#sec-data-details}
 
-To obtain data from IPUMS, we start by navigating to the IPUMS USA section and clicking on Get Data. Next, we go to the Select Sample section, where we uncheck the "Default sample from each year" option and instead select 2023 ACS. After selecting our sample, we proceed to add variables of interest. For individual-level data, we might add variables from the Person section. For example, under Demographic, we could include variables like AGE, and under Person, we could add SEX, RACE, INCTOT (total personal income) and EDUC (education attainment). Once our variables are selected, we click View Cart, then proceed by clicking Create Data Extract. At this point, we review our selections, change the Data Format to CSV, and submit our extract for processing. Then we saved it locally as usa_00001.csv.
+### Cleaned Data
 
-## Model Assumptions
-1. **Linearity**: The log odds of the outcome are linearly related to the predictors.
-2. **Independence**: Observations are independent of each other.
-3. **No Multicollinearity**: Predictors are not highly correlated.
-4. **No Outliers or Influential Points**: Checked through residual analysis.
+The table [@tbl-cleaned-data] shows the analysis data after data cleaning. 
+
+```{r}
+#| label: tbl-cleaned-data
+#| tbl-cap: Sample of cleaned data
+#| echo: false
+#| warning: false
+#| message: false
 
 
+# Display the first 6 rows of the dataset with column names
+head(data[, c("marital_status", "age", "gender", "Race", "Income", "education_level")], 6) |>
+  kable(
+    col.names = c("Marital Status", "Age", "Gender", "Race", "Income", "Education Level"),
+    booktabs = TRUE
+  )
+```
+
+
+## Model Details {#sec-model-details}
+
+### Posterior predictive check
+
+@fig-post provides an illustration of the posterior predictive check, showing the alignment between the observed outcome variable and the simulations derived from the posterior distribution. In a similar vein, @fig-prior-post depicts a comparison between the prior and posterior distributions, highlighting the degree to which the data informs and updates our estimates. Together, these figures offer strong evidence that the model achieves a reliable and accurate fit to the observed data.
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-post
+#| fig-cap: Posterior distribution for logistic regression model
+
+pp_check(logistic_model) +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-prior-post
+#| fig-cap: Comparing prior distribution with posterior distribution
+
+# Compare posterior and prior distributions
+posterior_vs_prior(logistic_model) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(hjust = 1, vjust = 0.5),
+    text = element_text(size = 8)
+  ) +
+  guides(color = guide_legend(ncol = 6)) +
+  theme(legend.position = "bottom") +
+  coord_flip() +
+  ggtitle("Comparison of Prior and Posterior Distributions")
+```
+
+### Diagnostics
+
+@fig-trace1 and @fig-rhat provide insights into the MCMC diagnostics for the logistic regression model. @fig-trace1 show stable and well-mixed chains for all parameters, indicating convergence. fig-rhat shows $\hat{R}$ diagnostics are all close to 1, further confirming that the MCMC sampling has successfully converged to the posterior distribution.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-trace1
+#| fig-cap: "MCMC Convergence Check: Trace Plots for Key Parameters"
+#| fig-subcap: ["Intercept", "genderMale", "education_levelBachelor", "education_levelHigh_School", "education_levelBelow_High_School", "education_levelSome_College", "RaceAsian", "RaceBlack", "RaceOther", "RaceWhite", "age", "Income"]
+
+# Trace plots for select parameters
+library(bayesplot)
+mcmc_trace(
+  as.array(logistic_model), # Replace `model_fit` with your fitted model object
+  pars = c("(Intercept)", "genderMale", "education_levelBachelor", 
+           "education_levelHigh_School", "education_levelBelow_High_School", 
+           "education_levelSome_College", "RaceAsian", "RaceBlack", 
+           "RaceOther", "RaceWhite", "age", "Income")
+)+
+  scale_x_continuous(
+    breaks = seq(0, 1000, by = 200), # Set x-axis breaks at intervals of 200
+    labels = seq(0, 1000, by = 200)  # Match labels to breaks
+  ) +
+  theme_minimal() +
+  theme(
+    text = element_text(size = 10), # Adjust text size for clarity
+    legend.position = "bottom"      # Move legend to the bottom
+  )
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-rhat
+#| fig-cap: "Rhat plot"
+
+plot(logistic_model, "rhat")
+```
+## Surveys, sampling, and observational data {#sec-survey-sampling-observation}
+
+### Idealized Methodology
+
+#### Overview
+
+The objective of this survey is to explore the socio-demographic determinants of non-marriage in the United States. The study aims to understand factors influencing decisions to remain unmarried, including education, income, race, age, and cultural attitudes. A budget of $50,000 is allocated to collect diverse and representative data from individuals aged 18 and above. The methodology is designed to maximize the accuracy.
+
+#### Sampling Approach
+
+A stratified sampling approach is adopted to ensure the representation of key demographic and socio-economic groups. 
+Stratification variables include:
+
+* Age: 18–29, 30–44, 45–64, 65+
+* Gender: Male, Female, Non-binary
+* Race/Ethnicity: White, Black, Hispanic, Asian, American Indian, Other
+* Income: <$20,000, $20,000–$59,999, $60,000–$99,999, >$100,000
+* Education: Under High School, High School, Some College, Bachelor's Degree, Above Bachelor's Degree
+*Geographic Region: Northeast, Midwest, South, West
+The target sample size is 5,000 respondents, yielding a margin of error of ±2.5% at a 95% confidence level.
+
+#### Recruitment Strategy
+
+* Online Surveys: Partner with established survey platforms like Prolific or Qualtrics, which offer access to diverse and validated panels. 
+* Community Engagement: Partnerships with community organizations for in-person recruitment.
+* Mail Invitations: Surveys sent by mail, accompanied by pre-paid return envelopes or online access codes for respondents to complete the survey.
+* Telephone Interviews: Random-digit dialing (RDD) to reach both landlines and mobile phones, ensuring coverage of participants without internet access.
+
+#### Data Collection
+
+Data collection will utilize platforms like Google Forms, with telephone and mail surveys structured to mirror the design and flow of the Google Form questionnaire. To reduce the likelihood of participants abandoning the survey, it has been tailored to take approximately five to ten minutes to complete.
+
+#### Data Validation and Quality Control
+
+* Pre-Survey Validation: Pilot testing with diverse focus groups to refine question phrasing and structure.
+* Ongoing Quality Checks: Automated checks for inconsistent or incomplete responses during the survey.
+* Post-Survey Weighting: Application of population weights to correct for sample imbalances across demographic strata.
+
+#### Budget Allocation
+
+* Survey Recruitment: $30,000
+* Incentives: $10,000
+* Data Cleaning and Analysis: $5,000
+* Miscellaneous (software, outreach): $5,000
+
+### Idealized Survey Questions
+
+Welcome Message  
+Welcome! Thank you for participating in this survey on marital status and the factors influencing people's decision to remain unmarried. Your responses are anonymous and will only be used for research purposes. This survey will take approximately 5–10 minutes to complete.
+
+---
+
+Screening Questions  
+Q1: Are you currently residing in the United States?  
+- Yes  
+- No *(If "No," terminate the survey with a thank-you message.)*
+
+Q2: What is your age?  
+- Under 18 *(Terminate the survey with a thank-you message.)*  
+- 18 or older  
+
+---
+
+Consent to Participate  
+Before proceeding, please read the following:  
+- Your participation in this survey is voluntary.  
+- You may skip any question or withdraw at any time.  
+- All responses are anonymous and will be aggregated for research purposes.  
+
+Do you agree to participate in this survey?  
+- Yes, I agree to participate.  
+- No, I do not agree to participate. *(If "No," terminate the survey with a thank-you message.)*  
+
+---
+
+Survey Questions  
+
+Q3: What is your gender?  
+- Male  
+- Female  
+- Non-binary  
+- Prefer not to say  
+
+Q4: What is your race/ethnicity?  
+- White  
+- Black or African American  
+- Asian  
+- Hispanic or Latino  
+- Native American or Alaska Native  
+- Other  
+
+Q5: What is your highest level of education?  
+- Less than high school  
+- High school diploma or equivalent  
+- Some college  
+- Bachelor’s degree  
+- Postgraduate degree  
+
+Q6: What is your total annual income?  
+- Less than $20,000  
+- $20,000–$49,999  
+- $50,000–$79,999  
+- $80,000–$99,999  
+- $100,000 or more  
+
+Q7: What is your age group?  
+- 18–29  
+- 30–44  
+- 45–59  
+- 60 or older  
+
+---
+
+Q8: What is your current marital status?  
+- Never married  
+- Married  
+- Divorced  
+- Widowed  
+- Separated  
+
+Q9: If never married, have you ever been in a serious relationship (e.g., cohabitation, long-term dating)?  
+- Yes  
+- No  
+
+---
+
+Q10: How important do you consider marriage in your life?  
+- Very important  
+- Somewhat important  
+- Not very important  
+- Not at all important  
+
+Q11: What are the main reasons for not being married? *(Select all that apply)*  
+- Financial concerns  
+- Lack of a suitable partner  
+- Personal choice  
+- Career priorities  
+- Family or cultural pressures  
+- Other (please specify)  
+
+Q12: Do you feel societal pressure to get married?  
+- Strongly agree  
+- Agree  
+- Neutral  
+- Disagree  
+- Strongly disagree  
+
+---
+
+Q13: Do you plan to get married in the future?  
+- Yes  
+- No  
+- Unsure  
+
+Q14: If unsure or no, what factors might influence your decision?  
+- Improved financial stability  
+- Finding the right partner  
+- Change in personal values  
+- Other (please specify)  
+
+---
+
+Closing Message  
+Thank you for completing this survey! Your responses have been recorded. If you have any questions about this survey or its purpose, please contact xizi.sun@mail.utoronto.ca. Have a great day!
 
 \newpage
 
