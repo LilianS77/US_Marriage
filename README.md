@@ -9,7 +9,8 @@ This study examines the socio-demographic determinants of non-marriage in the Un
 
 The repo is structured as:
 
--   `data/analysis_data` contains the cleaned dataset that was constructed.
+-   `data/00-simulated_data` contains the simulated dataset.
+-   `data/01-analysis_data` contains the cleaned dataset that was constructed.
 -   `model` contains fitted models. 
 -   `other` contains relevant datasheet, literature, details about LLM chat interactions, and sketches.
 -   `paper` contains the files used to generate the paper, including the Quarto document and reference bibliography file, as well as the PDF of the paper. 
