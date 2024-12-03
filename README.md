@@ -2,7 +2,7 @@
 
 ## Overview
 
-This study examines the socio-demographic determinants of non-marriage in the United States using logistic regression analysis on individual-level data. The find-ings highlight that individuals with lower income and education levels, particularly below a bachelor’s degree, are significantly more likely to remain unmarried. Additionally, gender and race also play critical roles, with men and certain racial groups, such as African Americans, showing higher unmarried rates. These results underscore structural inequities and socio-economic barriers shaping marital outcomes, offering insights into broader societal patterns and potential areas for intervention.
+This study examines the socio-demographic determinants of non-marriage in the United States using logistic regression analysis on individual-level data. The find-ings highlight that individuals with lower income and education levels, particularly below a bachelor’s degree, are significantly more likely to remain unmarried. Additionally, gender and race also play important roles, with men and certain racial groups, such as African Americans, showing higher unmarried rates. These results underscore structural inequities and socio-economic barriers shaping marital outcomes, offering insights into broader societal patterns and potential areas for intervention.
 
 
 ## File Structure
