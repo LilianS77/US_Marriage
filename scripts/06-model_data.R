@@ -19,13 +19,13 @@ library(here)
 data <- read_parquet(here("data", "01-analysis_data", "analysis_data.parquet"))
 
 # Ensure the marital_status variable is converted to a binary response variable
-analysis_data <- data %>%
+data <- data %>%
   mutate(Not_Married = ifelse(marital_status == "Not_Married", 1, 0))
 
 # Fit a Bayesian logistic regression model
 logistic_model <- stan_glm(
   Not_Married ~ age + gender + Race + Income + education_level,
-  data = analysis_data,
+  data = data,
   family = binomial(link = "logit"),
   prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
   prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
