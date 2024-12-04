@@ -2,7 +2,7 @@
 
 ## Overview
 
-This study examines the socio-demographic determinants of non-marriage in the United States using logistic regression analysis on individual-level data. The find-ings highlight that individuals with lower income and education levels, particularly below a bachelor’s degree, are significantly more likely to remain unmarried. Additionally, gender and race also play important roles, with men and certain racial groups, such as African Americans, showing higher unmarried rates. These results underscore structural inequities and socio-economic barriers shaping marital outcomes, offering insights into broader societal patterns and potential areas for intervention.
+This study examines the socio-demographic factors influencing non-marriage in the United States in 2023 through logistic regression analysis of individual-level data. The findings show that individuals with lower income and education levels, particularly those without a bachelor’s degree, are more likely to remain unmarried. Additionally, gender and race significantly influence outcomes, with men and certain racial groups, such as African Americans, experiencing higher rates of non-marriage. These results highlight structural inequities and socio-economic barriers affecting marital patterns and identify areas for potential policy action.
 
 
 ## File Structure
@@ -19,4 +19,4 @@ The repo is structured as:
 
 ## Statement on LLM usage
 
-Aspects of the code were written with the help of the auto-complete tool, ChatGPT. The entire chat history is available in other/llms/ll_usage.txt.
+This project utilized ChatGPT-4o to assist during the research, development, and writing processes. The entire chat history is available in other/llms/ll_usage.txt.

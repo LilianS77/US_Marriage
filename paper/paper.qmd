@@ -6,7 +6,7 @@ author:
 thanks: "Code and data are available at: https://github.com/LilianS77/US_Marriage."
 date: today
 date-format: long
-abstract: "This study examines the socio-demographic determinants of non-marriage in the United States in 2023 using logistic regression analysis on individual-level data. The findings highlight that individuals with lower income and education levels, particularly below a bachelor’s degree, are significantly more likely to remain unmarried. Additionally, gender and race also play important roles, with men and certain racial groups, such as African Americans, showing higher unmarried rates. These results underscore structural inequities and socio-economic barriers shaping marital outcomes, offering insights into broader societal patterns and potential areas for intervention."
+abstract: "This study examines the socio-demographic factors influencing non-marriage in the United States in 2023 through logistic regression analysis of individual-level data. The findings show that individuals with lower income and education levels, particularly those without a bachelor’s degree, are more likely to remain unmarried. Additionally, gender and race significantly influence outcomes, with men and certain racial groups, such as African Americans, experiencing higher rates of non-marriage. These results highlight structural inequities and socio-economic barriers affecting marital patterns and identify areas for potential policy action."
 format: pdf
 number-sections: true
 toc: true
@@ -50,7 +50,7 @@ The estimand of this study is the reason an individual remains unmarried, analyz
 
 The findings, derived through logistic regression analysis, show significant patterns. Higher education levels are strongly linked to higher marriage rates, while economic stability, as indicated by higher income, positively correlates with marital status. Marked disparities are evident among racial and gender groups. African Americans, for instance, demonstrate higher rates of non-marriage, whereas males are slightly more likely to remain unmarried than females. These findings underscore persistent structural inequities and cultural complexities influencing marriage in contemporary American society. Recognizing these inequities equips policymakers and social institutions to design targeted interventions that address inequality, foster opportunities for stable relationships, and adapt to evolving family dynamics in modern society.
 
-The structure of this paper is as follows: @sec-data explains the dataset, variable selection, and measurement strategies employed to study marital status. @sec-model discusses the logistic regression methodology, including model rationale, prior specifications, and validation processes. @sec-results presents the key findings with supporting visualizations, emphasizing the roles of education, income, race, gender, and age in predicting non-marriage. Finally, @sec-discussion discusses the implications of the findings, acknowledges study limitations, and outlines potential areas for future research.
+The structure of this paper is as follows: @sec-data explains the dataset, variable selection, and measurement strategies employed to study marital status. @sec-model discusses the logistic regression methodology. @sec-results presents the key findings with supporting visualizations, emphasizing the roles of education, income, race, gender, and age in predicting non-marriage. Finally, @sec-discussion discusses the implications of the findings, acknowledges study limitations, and outlines potential areas for future research.
 
 
 # Data {#sec-data}
@@ -59,14 +59,17 @@ The structure of this paper is as follows: @sec-data explains the dataset, varia
 
 The dataset was analyzed using R [@citeR] and utilized several R packages for data manipulation, visualization, and analysis, including ggplot2 [@ggplot2] for creating elegant graphics, dplyr [@citeDplyr] for data wrangling, and here [@citeHere] for simplifying file management. The data was processed efficiently using Apache Arrow [@citeArrow], and visualizations were further enhanced with the scales package [@citeScales]. logistic regression modeling was implemented using rstanarm [@citeRstanarm], while statistical results were tidied with broom [@citeBroom] and broom.mixed [@citeBroomMixed]. Tables were constructed using kableExtra [@citeKableExtra] for a polished presentation. Reproducibility was ensured with knitr [@citeKnitr]. The bayesplot package [@citeBayesplot] was utilized for visualizing Bayesian model diagnostics and posterior predictive checks. Data was extracted from IPUMS USA [@ipumsusa], and guidance on storytelling with data was drawn from Telling Stories with Data [@tellingstories].
 
-## Measurement
+## Data Source and Measurement
+
+The data employed in this research was obtained from IPUMS USA (Integrated Public Use Microdata Series) [@ipumsusa]. This dataset contains individual-level microdata, where each record represents a distinct individual. The attributes of these individuals are numerically coded and span a wide array of demographic, economic, and social variables.
 
 For this study, data was specifically drawn from the American Community Survey (ACS) [@citeACS], a subset of IPUMS. The ACS conducts ongoing data collection throughout the year, selecting approximately 250,000 addresses each month to ensure the population's most current representation. The survey employs several collection methods to maximize participation. Initially, respondents receive a request to complete the survey online or return a paper questionnaire via mail. If no response is received, follow-up contact is made through telephone, utilizing a computer-assisted interview system (CATI). For those who remain unresponsive, a portion—approximately one-third—is selected for an in-person, computer-assisted personal interview (CAPI). In addition, the survey covers a wide range of social, economic and demographic characteristics, such as the variables of marital status, age and education analyzed in this study.
 
 ## Outcome Variables
 The primary outcome variable for this study is **Marital Status**, which categorizes individuals based on their marital state. The proportion of marital status categories is displayed in @fig-proportion-marriage. This variable allows for a comparison between individuals who have never married (`Not_Married`) and those who have (`Married`). For this study,
-**Not_Married**: Includes individuals who have never been married.
-**Married**: Includes individuals who are married, as well as those who are divorced, widowed, or separated.
+
+1. **Not_Married**: Includes individuals who have never been married.
+2. **Married**: Includes individuals who are married, as well as those who are divorced, widowed, or separated.
 
 ```{r}
 #| echo: false
@@ -417,33 +420,35 @@ ggplot(gender_marital_status, aes(x = "", y = proportion, fill = marital_status)
 ```
 # Discussion {#sec-discussion}
 
-## Determinants of Non-Marriage and Societal Implications
+## Determinants of Non-Marriage
 
-This study investigates the socio-demographic factors influencing marital status, focusing on the probability of remaining unmarried in the United States. Through logistic regression analysis applied to individual-level microdata, significant predictors such as education, income, race, gender, and age were identified.
+This study identifies the socio-demographic factors influencing marital status in the United States, focusing on the likelihood of remaining unmarried. Through logistic regression analysis, the roles of education, income, race, gender, and age were examined.
 
-Higher education levels were strongly associated with lower non-marriage rates. For instance, @fig-edu-marriage shows that only 16% of individuals with education above a bachelor’s degree were unmarried, compared to 32% for those with "Some College" education. Logistic regression coefficients further underscore this trend, with individuals holding higher degrees being substantially less likely to remain unmarried (e.g., the coefficient for "Below High School" = 0.48). Education thus acts as a stabilizing factor, equipping individuals with economic resources and social networks conducive to marriage.
+### The Role of Education
 
-Similarly, income plays a complementary but less pronounced role. @fig-Income-Unmarried illustrates that unmarried individuals tend to cluster in lower income brackets, with the majority earning less than $40,000 annually. This highlights the persistent importance of financial stability in marital decisions, although its impact appears secondary to education.
+Education was found to be the most significant factor associated with marital status. Individuals with higher educational attainment, such as those holding graduate degrees, had the lowest rates of non-marriage (16%), while those with “Some College” education exhibited a 32% likelihood of being unmarried. The analysis highlights how education contributes to economic stability and social networks, creating conditions that favor marriage.  Aughinbaugh further observed that individuals with higher education are less likely to divorce and more likely to maintain stable marriages [@citeMarriagePatterns].
 
-The results also emphasize significant disparities across racial and gender lines. African Americans exhibited the highest non-marriage rates (43%), as shown in @fig-race-marriage, significantly surpassing those of Asian Americans (30%) and White individuals (24%). These patterns likely reflect structural inequalities, such as higher unemployment rates and barriers to wealth accumulation among African Americans. Gender differences were also evident, with men showing a slightly higher likelihood of remaining unmarried compared to women (30% versus 26%, respectively, @fig-gender-marriage). This aligns with cultural norms where women are more closely tied to family roles and experience greater societal pressure to marry.
+### Income as a Supporting Factor
 
-These findings reinforce how individual socio-demographic traits intersect with societal structures to shape marital outcomes. They also highlight systemic inequities that warrant targeted interventions.
+Income played a secondary but meaningful role in marital decisions. As shown in @fig-Income-Unmarried, the majority of unmarried individuals were concentrated in lower income brackets, earning less than $40,000 annually. This indicates that financial stability can influence decisions about marriage. Stable economic conditions are likely to increase individuals’ willingness to marry and form families. These findings highlight the relationship between economic factors and broader marriage trends.
 
-## Analysis of Education, Income, and Marriage Patterns
+## Race and Gender Differences
 
-Education emerged as the most significant predictor in this analysis. Higher education levels correlate strongly with lower non-marriage rates, as depicted in @fig-edu-marriage and @fig-coefficient. These findings align with theories suggesting that education enhances economic stability, expands social capital, and provides greater agency in life choices, all of which promote marriage. However, as @fig-Income-Unmarried indicates, financial stability remains an essential but secondary factor in marital decisions.
+### Racial Disparities
 
-The interplay between education and income underscores broader socio-economic disparities. For example, individuals with lower education levels not only face limited economic opportunities but are also more likely to remain unmarried, perpetuating cycles of inequality in family formation.
+Racial differences were pronounced in the analysis. African Americans had the highest non-marriage rates (43%), compared to 30% for Asian Americans and 24% for White individuals. These disparities may reflect systemic inequities, such as limited access to wealth and higher unemployment rates [@citeAltonjiMarriage]. In contrast, cultural values that emphasize family cohesion may contribute to the lower rates among Asian Americans.
 
-## Gender and Race in Marital Trends
+### Gender Disparities
 
-The analysis shows gender and racial disparities. As shown in @fig-gender-marriage, men exhibit higher non-marriage rates compared to women, likely reflecting cultural expectations and differing societal pressures. Racial disparities, however, are even more striking. African Americans, for instance, show the highest rates of non-marriage, suggesting systemic inequities such as income disparities and historical barriers to wealth accumulation. By contrast, Asian Americans, with the lowest non-marriage rates, may benefit from cultural norms emphasizing family cohesion and marriage stability.
+Gender also shaped marital patterns, with men showing a slightly higher likelihood of being unmarried than women (30% vs. 26%). This trend aligns with cultural expectations, where women often face greater societal pressure to marry and assume family roles [@citeMarriagePatterns]. These findings suggest that cultural norms significantly affect marital outcomes.
 
-These patterns illustrate how cultural norms and structural inequities converge to shape marital outcomes. Addressing these disparities requires policies that promote economic equity and social inclusivity.
+## The Role of Age
+
+Age patterns in marital status were evident in @fig-Age-Unmarried, with younger individuals, particularly those in their 20s and early 30s, being more likely to remain unmarried. This likelihood decreased with age, as individuals tend to enter marriage at more mature life stages when personal and financial readiness align. This trend is consistent with previous research, which shows that delayed marriage has become a common demographic pattern in modern society [@citeMarriagePatterns].
 
 ## Weaknesses and Next Steps
 
-While this study provides useful insights into the determinants of non-marriage, it is not without limitations. The cross-sectional nature of the data restricts causal inferences, making it difficult to ascertain how variables such as education and income evolve over time to influence marital decisions. Longitudinal data would allow for a deeper exploration of these dynamics.
+While this study provides detailed analysis of the determinants of non-marriage, it is not without limitations. The cross-sectional nature of the data restricts causal inferences, making it difficult to ascertain how variables such as education and income evolve over time to influence marital decisions. Longitudinal data would allow for a deeper exploration of these dynamics.
 
 Additionally, the dataset lacks qualitative dimensions, such as cultural attitudes or personal preferences, which are necessary for understanding the broader context of marital decisions. For instance, while financial stability and education are strong predictors, societal expectations and individual life goals may play equally important roles that remain unmeasured.
 
